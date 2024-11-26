@@ -1,4 +1,4 @@
-# A tonpy_chat Flet app
+# A tonpy_chat_client Flet app
 
 An example of a minimal Flet app.
 
