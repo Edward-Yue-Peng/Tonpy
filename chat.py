@@ -1,6 +1,6 @@
 import flet as ft
 
-
+# 一条信息
 class Message:
     def __init__(self, user_name: str, text: str, message_type: str):
         self.user_name = user_name
@@ -21,7 +21,7 @@ class ChatMessage(ft.Row):
             spacing=5,
         )
         self.controls = [ft.Container(
-            content = single_message,
+            content=single_message,
             # border=ft.border.all(1, ft.colors.OUTLINE),
             # border_radius=5,
             padding=0,
@@ -32,10 +32,12 @@ class ChatMessage(ft.Row):
 
 def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
-    page.title = "ICDS Chat"
+    page.title = "Tonpy"
     page.appbar = ft.AppBar(
-        title=ft.Text("ICDS Chat"),
+        title=ft.Text("Tonpy"),
     )
+
+    # 加入聊天的控件
     def join_chat_click(e):
         if not join_user_name.value:
             join_user_name.error_text = "Name cannot be blank!"
@@ -43,7 +45,7 @@ def main(page: ft.Page):
         else:
             page.session.set("user_name", join_user_name.value)
             page.dialog.open = False
-            new_message.prefix = ft.Text(f"{join_user_name.value}: ")
+            # new_message.prefix = ft.Text(f"{join_user_name.value}: ")
             page.pubsub.send_all(
                 Message(
                     user_name=join_user_name.value,
@@ -53,6 +55,7 @@ def main(page: ft.Page):
             )
             page.update()
 
+    # 发送键事件
     def send_message_click(e):
         if new_message.value != "":
             page.pubsub.send_all(
@@ -66,6 +69,10 @@ def main(page: ft.Page):
             new_message.focus()
             page.update()
 
+    def more_button_click(e):
+        pass
+
+    # 发送信息的方法
     def on_message(message: Message):
         if message.message_type == "chat_message":
             m = ChatMessage(message)
@@ -76,7 +83,7 @@ def main(page: ft.Page):
 
     page.pubsub.subscribe(on_message)
 
-    # A dialog asking for a user display name
+    # 进来先问用户名
     join_user_name = ft.TextField(
         label="Enter your name to join the chat",
         autofocus=True,
@@ -91,14 +98,14 @@ def main(page: ft.Page):
         actions_alignment=ft.MainAxisAlignment.END,
     )
 
-    # Chat messages
+    # 聊天区的占位
     chat = ft.ListView(
         expand=True,
         spacing=15,
         auto_scroll=True,
     )
 
-    # A new message entry form
+    # 发新信息的输入框
     new_message = ft.TextField(
         hint_text="Write a message...",
         autofocus=True,
@@ -110,23 +117,30 @@ def main(page: ft.Page):
         on_submit=send_message_click,
     )
 
-    # Add everything to the page
+    # 整个发送的控件
+    sending_area = ft.Row(
+        [
+            ft.IconButton(
+                icon=ft.icons.ADD,
+                tooltip="More",
+                on_click=more_button_click,
+            ),
+            new_message,
+            ft.IconButton(
+                icon=ft.icons.SEND_ROUNDED,
+                tooltip="Send message",
+                on_click=send_message_click,
+            ),
+        ]
+    )
+
     page.add(
         ft.Container(
             content=chat,
             padding=10,
             expand=True,
-        ),
-        ft.Row(
-            [
-                new_message,
-                ft.IconButton(
-                    icon=ft.icons.SEND_ROUNDED,
-                    tooltip="Send message",
-                    on_click=send_message_click,
-                ),
-            ]
-        ),
+        ), sending_area
+        ,
     )
 
 
