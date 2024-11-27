@@ -1,7 +1,7 @@
 import flet as ft
 from flet_core.colors import PRIMARY_CONTAINER
 from flet_core.cupertino_colors import ON_PRIMARY
-
+from qwen import chat_qwen
 
 # 一条信息
 class Message:
@@ -11,7 +11,7 @@ class Message:
         self.message_type = message_type
 
 
-class ChatMessage(ft.Row):
+class ChatMessageSent(ft.Row):
     def __init__(self, message: Message):
         super().__init__()
         self.vertical_alignment = ft.CrossAxisAlignment.START
@@ -30,13 +30,34 @@ class ChatMessage(ft.Row):
             # border_radius=5,
             # bgcolor=ON_PRIMARY,
             # padding=10,
-
             #TODO下面这条让自己发的信息右置
-            # alignment = ft.alignment.center_right,
+            alignment = ft.alignment.center_right,
             expand=True,
         )
         ]
 
+class ChatMessageReceive(ft.Row):
+    def __init__(self, message: Message):
+        super().__init__()
+        self.vertical_alignment = ft.CrossAxisAlignment.START
+        single_message = ft.Column(
+            [
+                ft.Text(message.user_name, weight="bold"),
+                ft.Text(message.text, selectable=True),
+            ],
+            tight=True,
+            spacing=5,
+        )
+        self.controls = [ft.Container(
+            content=single_message,
+            # 控制一条信息的样式
+            # border=ft.border.all(1, ft.colors.OUTLINE),
+            # border_radius=5,
+            # bgcolor=ON_PRIMARY,
+            # padding=10,
+            expand=True,
+        )
+        ]
 
 def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
@@ -71,15 +92,18 @@ def main(page: ft.Page):
     def send_message_click(e):
         #TODO发送的信息要传给后端
         if new_message.value != "":
+            # 这里要搞copy是因为，new message那个输入框应该马上清掉，但是QWEN有处理时间
+            new_message_copy = new_message.value
+            new_message.value = ""
+            new_message.focus()
             page.pubsub.send_all(
                 Message(
                     page.session.get("user_name"),
-                    new_message.value,
-                    message_type="chat_message",
+                    new_message_copy,
+                    message_type="sent_message",
                 )
             )
-            new_message.value = ""
-            new_message.focus()
+            page.pubsub.send_all(Message('QWEN',chat_qwen(str(new_message_copy)),message_type="received_message",))
             page.update()
 
     def more_button_click(e):
@@ -87,8 +111,10 @@ def main(page: ft.Page):
 
     # 发送信息的方法
     def on_message(message: Message):
-        if message.message_type == "chat_message":
-            m = ChatMessage(message)
+        if message.message_type == "sent_message":
+            m = ChatMessageSent(message)
+        elif message.message_type == "received_message":
+            m = ChatMessageReceive(message)
         elif message.message_type == "login_message":
             m = ft.Text(message.text, italic=True, size=12)
         chat.controls.append(m)
