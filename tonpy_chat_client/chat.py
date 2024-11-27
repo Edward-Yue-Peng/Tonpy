@@ -1,4 +1,7 @@
 import flet as ft
+from flet_core.colors import PRIMARY_CONTAINER
+from flet_core.cupertino_colors import ON_PRIMARY
+
 
 # 一条信息
 class Message:
@@ -22,9 +25,14 @@ class ChatMessage(ft.Row):
         )
         self.controls = [ft.Container(
             content=single_message,
+            # 控制一条信息的样式
             # border=ft.border.all(1, ft.colors.OUTLINE),
             # border_radius=5,
-            padding=0,
+            # bgcolor=ON_PRIMARY,
+            # padding=10,
+
+            #TODO下面这条让自己发的信息右置
+            # alignment = ft.alignment.center_right,
             expand=True,
         )
         ]
@@ -33,12 +41,17 @@ class ChatMessage(ft.Row):
 def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
     page.title = "Tonpy"
+
+    #TODO 不知道怎么改图标
+    page.icon = 'assets/icon.png'
+    # page.bgcolor = PRIMARY_CONTAINER
     # 加入聊天的控件
     def join_chat_click(e):
         if not join_user_name.value:
             join_user_name.error_text = "Name cannot be blank!"
             join_user_name.update()
         else:
+            #TODO用户名要传给后端
             page.session.set("user_name", join_user_name.value)
             page.dialog.open = False
             page.appbar = ft.AppBar(
@@ -56,6 +69,7 @@ def main(page: ft.Page):
 
     # 发送键事件
     def send_message_click(e):
+        #TODO发送的信息要传给后端
         if new_message.value != "":
             page.pubsub.send_all(
                 Message(
