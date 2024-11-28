@@ -1,10 +1,7 @@
 import flet as ft
-from flet_core.colors import PRIMARY_CONTAINER
-from flet_core.cupertino_colors import ON_PRIMARY
 from qwen import chat_qwen
 
 
-# 一条信息
 class Message:
     def __init__(self, user_name: str, text: str, message_type: str):
         self.user_name = user_name
@@ -27,12 +24,6 @@ class ChatMessageSent(ft.Row):
         self.controls = [
             ft.Container(
                 content=single_message,
-                # 控制一条信息的样式
-                # border=ft.border.all(1, ft.colors.OUTLINE),
-                # border_radius=5,
-                # bgcolor=ON_PRIMARY,
-                # padding=10,
-                # TODO下面这条让自己发的信息右置
                 alignment=ft.alignment.center_right,
                 expand=True,
             )
@@ -54,37 +45,25 @@ class ChatMessageReceive(ft.Row):
         self.controls = [
             ft.Container(
                 content=single_message,
-                # 控制一条信息的样式
-                # border=ft.border.all(1, ft.colors.OUTLINE),
-                # border_radius=5,
-                # bgcolor=ON_PRIMARY,
-                # padding=10,
                 expand=True,
             )
         ]
 
 
-def main(page: ft.Page):
-    page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
-    page.title = "Tonpy"
+def chat_page_view(page: ft.Page):
+    route_parts = page.route.split("/")
+    if len(route_parts) > 2:
+        selected_user = route_parts[2]
+    else:
+        selected_user = "Unknown"
 
-    # TODO 不知道怎么改图标
-    page.icon = "assets/icon.png"
-
-    # page.bgcolor = PRIMARY_CONTAINER
-    # 加入聊天的控件
     def join_chat_click(e):
         if not join_user_name.value:
             join_user_name.error_text = "Name cannot be blank!"
             join_user_name.update()
         else:
-            # TODO用户名要传给后端
             page.session.set("user_name", join_user_name.value)
             page.dialog.open = False
-            page.appbar = ft.AppBar(
-                title=ft.Text(f"Welcome {join_user_name.value}! Let's chat."),
-            )
-            # new_message.prefix = ft.Text(f"{join_user_name.value}: ")
             page.pubsub.send_all(
                 Message(
                     user_name=join_user_name.value,
@@ -94,11 +73,8 @@ def main(page: ft.Page):
             )
             page.update()
 
-    # 发送键事件
     def send_message_click(e):
-        # TODO发送的信息要传给后端
         if new_message.value != "":
-            # 这里要搞copy是因为，new message那个输入框应该马上清掉，但是QWEN有处理时间
             new_message_copy = new_message.value
             new_message.value = ""
             new_message.focus()
@@ -111,17 +87,13 @@ def main(page: ft.Page):
             )
             page.pubsub.send_all(
                 Message(
-                    "QWEN",
+                    selected_user,
                     chat_qwen(str(new_message_copy)),
                     message_type="received_message",
                 )
             )
             page.update()
 
-    def more_button_click(e):
-        pass
-
-    # 发送信息的方法
     def on_message(message: Message):
         if message.message_type == "sent_message":
             m = ChatMessageSent(message)
@@ -134,7 +106,6 @@ def main(page: ft.Page):
 
     page.pubsub.subscribe(on_message)
 
-    # 进来先问用户名
     join_user_name = ft.TextField(
         label="Enter your name to join the chat",
         autofocus=True,
@@ -149,14 +120,12 @@ def main(page: ft.Page):
         actions_alignment=ft.MainAxisAlignment.END,
     )
 
-    # 聊天区的占位
     chat = ft.ListView(
         expand=True,
         spacing=15,
         auto_scroll=True,
     )
 
-    # 发新信息的输入框
     new_message = ft.TextField(
         hint_text="Write a message...",
         autofocus=True,
@@ -168,13 +137,11 @@ def main(page: ft.Page):
         on_submit=send_message_click,
     )
 
-    # 整个发送的控件
     sending_area = ft.Row(
         [
             ft.IconButton(
                 icon=ft.icons.ADD,
                 tooltip="More",
-                on_click=more_button_click,
             ),
             new_message,
             ft.IconButton(
@@ -184,15 +151,22 @@ def main(page: ft.Page):
             ),
         ]
     )
-
-    page.add(
-        ft.Container(
-            content=chat,
-            padding=10,
-            expand=True,
+    return ft.View(
+        route=f"/chat/{selected_user}",
+        appbar=ft.AppBar(
+            title=ft.Text(f"Chat with {selected_user}"),
+            leading=ft.IconButton(
+                icon=ft.icons.ARROW_BACK,
+                tooltip="Back to User List",
+                on_click=lambda _: page.go("/users"),
+            ),
         ),
-        sending_area,
+        controls=[
+            ft.Container(
+                content=chat,
+                padding=10,
+                expand=True,
+            ),
+            sending_area,
+        ],
     )
-
-
-ft.app(target=main)
