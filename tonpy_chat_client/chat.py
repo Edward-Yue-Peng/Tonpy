@@ -3,6 +3,8 @@ from flet_core.colors import PRIMARY_CONTAINER
 from flet_core.cupertino_colors import ON_PRIMARY
 from qwen import chat_qwen
 
+
+# 测试git
 # 一条信息
 class Message:
     def __init__(self, user_name: str, text: str, message_type: str):
@@ -23,18 +25,20 @@ class ChatMessageSent(ft.Row):
             tight=True,
             spacing=5,
         )
-        self.controls = [ft.Container(
-            content=single_message,
-            # 控制一条信息的样式
-            # border=ft.border.all(1, ft.colors.OUTLINE),
-            # border_radius=5,
-            # bgcolor=ON_PRIMARY,
-            # padding=10,
-            #TODO下面这条让自己发的信息右置
-            alignment = ft.alignment.center_right,
-            expand=True,
-        )
+        self.controls = [
+            ft.Container(
+                content=single_message,
+                # 控制一条信息的样式
+                # border=ft.border.all(1, ft.colors.OUTLINE),
+                # border_radius=5,
+                # bgcolor=ON_PRIMARY,
+                # padding=10,
+                # TODO下面这条让自己发的信息右置
+                alignment=ft.alignment.center_right,
+                expand=True,
+            )
         ]
+
 
 class ChatMessageReceive(ft.Row):
     def __init__(self, message: Message):
@@ -48,23 +52,26 @@ class ChatMessageReceive(ft.Row):
             tight=True,
             spacing=5,
         )
-        self.controls = [ft.Container(
-            content=single_message,
-            # 控制一条信息的样式
-            # border=ft.border.all(1, ft.colors.OUTLINE),
-            # border_radius=5,
-            # bgcolor=ON_PRIMARY,
-            # padding=10,
-            expand=True,
-        )
+        self.controls = [
+            ft.Container(
+                content=single_message,
+                # 控制一条信息的样式
+                # border=ft.border.all(1, ft.colors.OUTLINE),
+                # border_radius=5,
+                # bgcolor=ON_PRIMARY,
+                # padding=10,
+                expand=True,
+            )
         ]
+
 
 def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
     page.title = "Tonpy"
 
-    #TODO 不知道怎么改图标
-    page.icon = 'assets/icon.png'
+    # TODO 不知道怎么改图标
+    page.icon = "assets/icon.png"
+
     # page.bgcolor = PRIMARY_CONTAINER
     # 加入聊天的控件
     def join_chat_click(e):
@@ -72,7 +79,7 @@ def main(page: ft.Page):
             join_user_name.error_text = "Name cannot be blank!"
             join_user_name.update()
         else:
-            #TODO用户名要传给后端
+            # TODO用户名要传给后端
             page.session.set("user_name", join_user_name.value)
             page.dialog.open = False
             page.appbar = ft.AppBar(
@@ -90,7 +97,7 @@ def main(page: ft.Page):
 
     # 发送键事件
     def send_message_click(e):
-        #TODO发送的信息要传给后端
+        # TODO发送的信息要传给后端
         if new_message.value != "":
             # 这里要搞copy是因为，new message那个输入框应该马上清掉，但是QWEN有处理时间
             new_message_copy = new_message.value
@@ -103,7 +110,13 @@ def main(page: ft.Page):
                     message_type="sent_message",
                 )
             )
-            page.pubsub.send_all(Message('QWEN',chat_qwen(str(new_message_copy)),message_type="received_message",))
+            page.pubsub.send_all(
+                Message(
+                    "QWEN",
+                    chat_qwen(str(new_message_copy)),
+                    message_type="received_message",
+                )
+            )
             page.update()
 
     def more_button_click(e):
@@ -178,8 +191,8 @@ def main(page: ft.Page):
             content=chat,
             padding=10,
             expand=True,
-        ), sending_area
-        ,
+        ),
+        sending_area,
     )
 
 
