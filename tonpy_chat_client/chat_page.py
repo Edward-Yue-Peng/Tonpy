@@ -1,5 +1,6 @@
 import flet as ft
-from qwen import chat_qwen
+from chat_control import *
+from data_control import Database
 
 
 class Message:
@@ -50,45 +51,26 @@ class ChatMessageReceive(ft.Row):
         ]
 
 
-def chat_page_view(page: ft.Page):
-    route_parts = page.route.split("/")
-    if len(route_parts) > 2:
-        selected_user = route_parts[2]
-    else:
-        selected_user = "Unknown"
-
-    def join_chat_click(e):
-        if not join_user_name.value:
-            join_user_name.error_text = "Name cannot be blank!"
-            join_user_name.update()
-        else:
-            page.session.set("user_name", join_user_name.value)
-            page.dialog.open = False
-            page.pubsub.send_all(
-                Message(
-                    user_name=join_user_name.value,
-                    text=f"{join_user_name.value} has joined the chat.",
-                    message_type="login_message",
-                )
-            )
-            page.update()
-
+def chat_page_view(page: ft.Page, data: Database):
     def send_message_click(e):
         if new_message.value != "":
+            # 这里是因为，如果直接用value，gpt反应时间会很慢，变成聊天栏很久不清除
             new_message_copy = new_message.value
             new_message.value = ""
+            #TODO 应该存一下聊天记录
             new_message.focus()
             page.pubsub.send_all(
                 Message(
-                    page.session.get("user_name"),
+                    data.user_name,
                     new_message_copy,
                     message_type="sent_message",
                 )
             )
             page.pubsub.send_all(
                 Message(
-                    selected_user,
-                    chat_qwen(str(new_message_copy)),
+                    data.selected_user,
+                    #TODO 这里的聊天逻辑是明显有问题的
+                    chat_with_individual(str(new_message_copy)),
                     message_type="received_message",
                 )
             )
@@ -105,20 +87,6 @@ def chat_page_view(page: ft.Page):
         page.update()
 
     page.pubsub.subscribe(on_message)
-
-    join_user_name = ft.TextField(
-        label="Enter your name to join the chat",
-        autofocus=True,
-        on_submit=join_chat_click,
-    )
-    page.dialog = ft.AlertDialog(
-        open=True,
-        modal=True,
-        title=ft.Text("Welcome!"),
-        content=ft.Column([join_user_name], width=300, height=70, tight=True),
-        actions=[ft.ElevatedButton(text="Join chat", on_click=join_chat_click)],
-        actions_alignment=ft.MainAxisAlignment.END,
-    )
 
     chat = ft.ListView(
         expand=True,
@@ -152,9 +120,9 @@ def chat_page_view(page: ft.Page):
         ]
     )
     return ft.View(
-        route=f"/chat/{selected_user}",
+        route=f"/chat",
         appbar=ft.AppBar(
-            title=ft.Text(f"Chat with {selected_user}"),
+            title=ft.Text(f"Chat with {data.selected_user}"),
             leading=ft.IconButton(
                 icon=ft.icons.ARROW_BACK,
                 tooltip="Back to User List",
