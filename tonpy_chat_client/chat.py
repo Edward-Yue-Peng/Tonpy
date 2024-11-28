@@ -4,7 +4,6 @@ from flet_core.cupertino_colors import ON_PRIMARY
 from qwen import chat_qwen
 
 
-# 测试git
 # 一条信息
 class Message:
     def __init__(self, user_name: str, text: str, message_type: str):
