@@ -1,5 +1,5 @@
 import flet as ft
-from chat_control import *
+from chat_control import chat_with_individual
 from data_control import Database
 
 
@@ -53,40 +53,27 @@ class ChatMessageReceive(ft.Row):
 
 def chat_page_view(page: ft.Page, data: Database):
     def send_message_click(e):
-        if new_message.value != "":
+        if new_message.value.strip():
             # 这里是因为，如果直接用value，gpt反应时间会很慢，变成聊天栏很久不清除
-            new_message_copy = new_message.value
+            user_message = new_message.value.strip()
             new_message.value = ""
-            #TODO 应该存一下聊天记录
             new_message.focus()
-            page.pubsub.send_all(
-                Message(
-                    data.user_name,
-                    new_message_copy,
-                    message_type="sent_message",
-                )
-            )
-            page.pubsub.send_all(
-                Message(
-                    data.selected_user,
-                    #TODO 这里的聊天逻辑是明显有问题的
-                    chat_with_individual(str(new_message_copy)),
-                    message_type="received_message",
-                )
+
+            # 添加用户发送的消息到聊天列表
+            chat.controls.append(
+                ChatMessageSent(Message(data.user_name, user_message, "sent_message"))
             )
             page.update()
 
-    def on_message(message: Message):
-        if message.message_type == "sent_message":
-            m = ChatMessageSent(message)
-        elif message.message_type == "received_message":
-            m = ChatMessageReceive(message)
-        elif message.message_type == "login_message":
-            m = ft.Text(message.text, italic=True, size=12)
-        chat.controls.append(m)
-        page.update()
-
-    page.pubsub.subscribe(on_message)
+            # 获取回复并添加到聊天列表
+            #TODO 这里的聊天逻辑是明显有问题的
+            response = chat_with_individual(user_message)
+            chat.controls.append(
+                ChatMessageReceive(
+                    Message(data.selected_user, response, "received_message")
+                )
+            )
+            page.update()
 
     chat = ft.ListView(
         expand=True,
@@ -119,8 +106,9 @@ def chat_page_view(page: ft.Page, data: Database):
             ),
         ]
     )
+
     return ft.View(
-        route=f"/chat",
+        route="/chat",
         appbar=ft.AppBar(
             title=ft.Text(f"Chat with {data.selected_user}"),
             leading=ft.IconButton(
