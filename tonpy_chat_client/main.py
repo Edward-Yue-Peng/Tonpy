@@ -3,6 +3,8 @@ from user_list import user_list_view
 from chat_page import chat_page_view
 from login import login_view
 from data_control import *
+import json
+import threading
 
 # 这玩意纯纯就是用来传各种参数，以及数据与后端的互动，其实应该有更聪明的办法，但是我不会。
 data = Database()
