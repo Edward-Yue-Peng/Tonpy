@@ -59,7 +59,7 @@ class Client:
     def output(self):
         if len(self.system_msg) > 0:
             # print(self.system_msg)
-            self.page.controls[0].content.controls.append(
+            self.page.views[-1].controls[0].content.controls.append(
                 ft.Text(value=self.system_msg)
             )
             self.page.update()
