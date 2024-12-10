@@ -19,6 +19,7 @@ class Client:
         self.local_msg = ""
         self.peer_msg = ""
         self.args = args
+        self.exception = ""
 
     def quit(self):
         self.socket.shutdown(socket.SHUT_RDWR)
@@ -30,8 +31,12 @@ class Client:
     def init_chat(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         svr = (self.args, CHAT_PORT) if self.args else SERVER
-        self.socket.connect(svr)
-        self.sm = csm.ClientSM(self.socket)
+        try:
+            self.socket.connect(svr)
+            self.sm = csm.ClientSM(self.socket)
+            self.exception = ""
+        except Exception as e:
+            self.exception = e
         # reading_thread = threading.Thread(target=self.read_input)
         # reading_thread.daemon = True
         # reading_thread.start()
@@ -58,7 +63,6 @@ class Client:
 
     def output(self):
         if len(self.system_msg) > 0:
-            # print(self.system_msg)
             self.page.views[-1].controls[0].content.controls.append(
                 ft.Text(value=self.system_msg)
             )
@@ -93,7 +97,7 @@ class Client:
         self.system_msg += menu
 
     def run_chat(self, page):
-        self.init_chat()
+        # self.init_chat()
         self.page = page
         self.system_msg += "Welcome to ICS chat\n"
         self.system_msg += "Please enter your name: "
@@ -105,6 +109,7 @@ class Client:
         while self.sm.get_state() != S_OFFLINE:
             self.proc()
             self.output()
+            # print("running")
             time.sleep(CHAT_WAIT)
         self.quit()
 

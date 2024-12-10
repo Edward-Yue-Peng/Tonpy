@@ -3,8 +3,9 @@ import flet as ft
 
 def login_view(page: ft.Page):
     def on_login_click(e):
+        print(page.session.get("exception"))
         if not usrname.value.rstrip():
-            usrname.error_text = "Name cannot be blank!"
+            usrname.error_text = "Please enter a valid username!"
             usrname.update()
         else:
             page.session.set("server_addr", server_addr.value)
@@ -14,7 +15,8 @@ def login_view(page: ft.Page):
 
     server_addr = ft.TextField(label="Server address", hint_text="localhost")
     usrname = ft.TextField(label="Username")
-
+    if page.session.get("exception") == "server_addr":
+        server_addr.error_text = "Server address is not valid!"
     login_button = ft.ElevatedButton(
         text="Login",
         on_click=on_login_click,

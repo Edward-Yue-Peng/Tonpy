@@ -6,10 +6,7 @@ from chat_program.chat_client_class import *
 def chat_view(page: ft.Page):
     page.title = "Tonpy"
     page.update()
-    client = Client(page.session.get("server_addr"))
-    client_thread = threading.Thread(target=client.run_chat, args=[page], daemon=True)
-    client_thread.start()
-    client.read_input(page.session.get("usrname"))
+
     # Chat messages
     chat = ft.ListView(
         expand=True,
