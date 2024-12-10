@@ -44,14 +44,42 @@ def chat_view(page: ft.Page, client):
         on_submit=send_message_click,
     )
 
+    def game_click(e):
+        page.dialog = game_choose
+        game_choose.open = True
+        page.update()
+
+    def gobang_choose(e):
+        client.read_input("gobang invite")
+        page.close_dialog()
+
+    game_choose = ft.AlertDialog(
+        title=ft.Text("Game center"),
+        content=ft.Column(
+            controls=[
+                ft.TextButton("Gobang", on_click=gobang_choose),
+                ft.TextButton("Something else", on_click=lambda e: page.close_dialog()),
+            ]
+        ),
+        actions=[ft.TextButton("Cancel", on_click=lambda e: page.close_dialog())],
+    )
     # Add everything to the page
     return ft.View(
         route="/chat",
+        appbar=ft.AppBar(
+            title=ft.Text(f"Tonpy"),
+            leading=ft.IconButton(
+                icon=ft.icons.ARROW_BACK,
+                tooltip="Logout",
+                on_click=lambda e: page.go("/login"),
+                # TODO 登出
+            ),
+        ),
         controls=[
             ft.Container(
                 content=chat,
-                border=ft.border.all(1, ft.Colors.OUTLINE),
-                border_radius=5,
+                # border=ft.border.all(1, ft.Colors.OUTLINE),
+                # border_radius=5,
                 padding=10,
                 expand=True,
             ),

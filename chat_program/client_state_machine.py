@@ -70,7 +70,17 @@ class ClientSM:
                     logged_in = json.loads(myrecv(self.s))["results"]
                     self.out_msg += "Here are all the users in the system:\n"
                     self.out_msg += logged_in
-
+                elif my_msg == "gobang invite":
+                    mysend(
+                        self.s,
+                        json.dumps({"action": "game_invite", "target": "gobang"}),
+                    )
+                    response = json.loads(myrecv(self.s))
+                    if response["status"] == "success":
+                        pass
+                    self.out_msg += "Gobang invite sent"
+                    self.state = S_GAME_INVITING
+                    
                 elif my_msg[0] == "c":
                     peer = my_msg[1:]
                     peer = peer.strip()
@@ -112,6 +122,13 @@ class ClientSM:
                     self.out_msg += ". Chat away!\n\n"
                     self.out_msg += "------------------------------------\n"
                     self.state = S_CHATTING
+                if peer_msg["action"] == "game_invite":
+                    if peer_msg["target"] == "gobang":
+                        self.out_msg += "Gobang invite from " + peer_msg["from"] + "\n"
+                        self.out_msg += "Type 'y' to accept, 'n' to decline\n"
+                        self.state = S_GAME_INVITING
+                    # TODO:游戏只能两个人玩，不能再多了
+                    pass
 
         # ==============================================================================
         # Start chatting, 'bye' for quit
