@@ -13,8 +13,10 @@ def login_view(page: ft.Page):
             print(f"Logged in as {usrname.value}")
             page.go("/chat")
 
-    server_addr = ft.TextField(label="Server address", hint_text="localhost")
-    usrname = ft.TextField(label="Username")
+    server_addr = ft.TextField(
+        label="Server address", hint_text="localhost", on_submit=on_login_click
+    )
+    usrname = ft.TextField(label="Username", on_submit=on_login_click)
     if page.session.get("exception") == "server_addr":
         server_addr.error_text = "Server address is not valid!"
     login_button = ft.ElevatedButton(
