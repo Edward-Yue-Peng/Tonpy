@@ -20,6 +20,11 @@ def chat_view(page: ft.Page, client):
             client.read_input(new_message.value)
         new_message.value = ""
         new_message.focus()
+        page.update()
+
+    def game_click(e):
+        page.go("/game")
+        pass
 
     def list_users(e):
         client.read_input("who")
@@ -59,6 +64,11 @@ def chat_view(page: ft.Page, client):
             ),
             ft.Row(
                 [
+                    ft.IconButton(
+                        icon=ft.icons.VIDEOGAME_ASSET,
+                        tooltip="Game",
+                        on_click=game_click,
+                    ),
                     new_message,
                     ft.IconButton(
                         icon=ft.Icons.SEND_ROUNDED,
