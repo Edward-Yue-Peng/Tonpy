@@ -70,17 +70,10 @@ class ClientSM:
                     logged_in = json.loads(myrecv(self.s))["results"]
                     self.out_msg += "Here are all the users in the system:\n"
                     self.out_msg += logged_in
-                elif my_msg == "gobang invite":
-                    mysend(
-                        self.s,
-                        json.dumps({"action": "game_invite", "target": "gobang"}),
-                    )
-                    response = json.loads(myrecv(self.s))
-                    if response["status"] == "success":
-                        pass
-                    self.out_msg += "Gobang invite sent"
-                    self.state = S_GAME_INVITING
-                    
+
+                elif my_msg == "gobang_invite":
+                    self.out_msg += "You need someone to play with"
+
                 elif my_msg[0] == "c":
                     peer = my_msg[1:]
                     peer = peer.strip()
@@ -122,13 +115,6 @@ class ClientSM:
                     self.out_msg += ". Chat away!\n\n"
                     self.out_msg += "------------------------------------\n"
                     self.state = S_CHATTING
-                if peer_msg["action"] == "game_invite":
-                    if peer_msg["target"] == "gobang":
-                        self.out_msg += "Gobang invite from " + peer_msg["from"] + "\n"
-                        self.out_msg += "Type 'y' to accept, 'n' to decline\n"
-                        self.state = S_GAME_INVITING
-                    # TODO:游戏只能两个人玩，不能再多了
-                    pass
 
         # ==============================================================================
         # Start chatting, 'bye' for quit
@@ -136,26 +122,44 @@ class ClientSM:
         # ==============================================================================
         elif self.state == S_CHATTING:
             if len(my_msg) > 0:  # my stuff going out
-                mysend(
-                    self.s,
-                    json.dumps(
-                        {
-                            "action": "exchange",
-                            "from": "[" + self.me + "]",
-                            "message": my_msg,
-                        }
-                    ),
-                )
                 if my_msg == "bye":
                     self.disconnect()
                     self.state = S_LOGGEDIN
                     self.peer = ""
+                elif my_msg == "gobang_invite":
+                    mysend(
+                        self.s,
+                        json.dumps({"action": "game_invite", "game": "gobang"}),
+                    )
+                    # response = json.loads(myrecv(self.s))
+                    # if response["status"] == "success":
+                    #     print("sucess1!!!!!!")
+                    self.out_msg += "Gobang invite sent"
+                    self.state = S_GAME_INVITING
+                else:
+                    mysend(
+                        self.s,
+                        json.dumps(
+                            {
+                                "action": "exchange",
+                                "from": "[" + self.me + "]",
+                                "message": my_msg,
+                            }
+                        ),
+                    )
             if len(peer_msg) > 0:  # peer's stuff, coming in
                 peer_msg = json.loads(peer_msg)
                 if peer_msg["action"] == "connect":
                     self.out_msg += "(" + peer_msg["from"] + " joined)\n"
                 elif peer_msg["action"] == "disconnect":
                     self.state = S_LOGGEDIN
+                elif peer_msg["action"] == "game_invite":
+                    self.out_msg += (
+                        peer_msg["game"] + "invite from " + peer_msg["from"] + "\n"
+                    )
+                    self.out_msg += "Type 'y' to accept, anything else to decline\n"
+                    # TODO should have a GUI dialog box
+                    self.state = S_GAME_DECIDING
                 else:
                     self.out_msg += peer_msg["from"] + peer_msg["message"]
 
@@ -165,6 +169,49 @@ class ClientSM:
         # ==============================================================================
         # invalid state
         # ==============================================================================
+        elif self.state == S_GAME_INVITING:
+            if len(peer_msg) > 0:
+                peer_msg = json.loads(peer_msg)
+                if peer_msg["response"] == "y":
+                    self.out_msg += f"{peer_msg["game"]} game starting\n"
+                    self.state = S_GAMING
+                if peer_msg["response"] == "n":
+                    self.out_msg += f"{peer_msg["game"]} game declined\n"
+                    self.state = S_CHATTING
+        elif self.state == S_GAME_DECIDING:
+            if len(my_msg) > 0:
+                if my_msg == "y":
+                    mysend(
+                        self.s,
+                        json.dumps(
+                            {
+                                "action": "game_response",
+                                "game": "gobang",
+                                "response": "y",
+                                "invitation_from": self.peer,
+                                # TODO self.peer should be the actual person who send the invite
+                                # TODO chat_server is now handling the "from_name"
+                            }
+                        ),
+                    )
+                    self.out_msg += f"Game starting\n"
+                    self.state = S_GAMING
+                else:
+                    mysend(
+                        self.s,
+                        json.dumps(
+                            {
+                                "action": "game_response",
+                                "game": "gobang",
+                                "response": "n",
+                            }
+                            # TODO target should be different by game
+                        ),
+                    )
+                    self.out_msg += "Gobang game declined\n"
+                    self.state = S_CHATTING
+        elif self.state == S_GAMING:
+            pass
         else:
             self.out_msg += "How did you wind up here??\n"
             print_state(self.state)

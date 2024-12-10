@@ -125,6 +125,37 @@ class Server:
                     msg = json.dumps({"action": "connect", "status": "no-user"})
                 mysend(from_sock, msg)
             # ==============================================================================
+            # handle game message: one peer for now. will need multicast later
+            # ==============================================================================
+            elif msg["action"] == "game_invite":
+                game = msg["game"]
+                from_name = self.logged_sock2name[from_sock]
+                to_name = self.group.list_me(from_name)[1]
+                to_sock = self.logged_name2sock[to_name]
+                # TODO golang can only be played by two people
+                
+                mysend(
+                    to_sock,
+                    json.dumps(
+                        {"action": "game_invite", "game": game, "from": from_name}
+                    ),
+                )
+            elif msg["action"] == "game_response":
+                from_name = self.logged_sock2name[from_sock]
+                to_name = self.group.list_me(from_name)[1]
+                to_sock = self.logged_name2sock[to_name]
+                mysend(
+                    to_sock,
+                    json.dumps(
+                        {
+                            "action": "game_response",
+                            "game": msg["game"],
+                            "response": msg["response"],
+                            "from": from_name,
+                        }
+                    ),
+                )
+            # ==============================================================================
             # handle messeage exchange: one peer for now. will need multicast later
             # ==============================================================================
             elif msg["action"] == "exchange":
@@ -197,6 +228,7 @@ class Server:
                     g = the_guys.pop()
                     to_sock = self.logged_name2sock[g]
                     mysend(to_sock, json.dumps({"action": "disconnect"}))
+
         # ==============================================================================
         #                 the "from" guy really, really has had enough
         # ==============================================================================

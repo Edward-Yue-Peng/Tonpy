@@ -4,7 +4,7 @@ from chat_program.chat_client_class import *
 from parser import *
 
 
-def chat_view(page: ft.Page, client):
+def chat_view(page: ft.Page, client: Client):
     page.title = "Tonpy"
     page.update()
 
@@ -14,7 +14,6 @@ def chat_view(page: ft.Page, client):
         spacing=10,
         auto_scroll=True,
     )
-
     def send_message_click(e):
         if new_message.value != "":
             chat.controls.append(
@@ -50,9 +49,10 @@ def chat_view(page: ft.Page, client):
         page.update()
 
     def gobang_choose(e):
-        client.read_input("gobang invite")
+        client.read_input("gobang_invite")
         page.close_dialog()
 
+    
     game_choose = ft.AlertDialog(
         title=ft.Text("Game center"),
         content=ft.Column(
