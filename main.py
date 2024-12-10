@@ -15,6 +15,7 @@ def main(page: ft.Page):
             page.views.append(login_view(page))
             page.update()
         elif page.route == "/chat":
+            global client
             client = Client(page.session.get("server_addr"))
             page.views.append(chat_view(page, client))
             page.update()

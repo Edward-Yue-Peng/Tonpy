@@ -1,5 +1,6 @@
 from chat_program.chat_utils import *
 import json
+from parser import *
 
 
 class ClientSM:
