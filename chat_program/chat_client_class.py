@@ -9,6 +9,8 @@ import chat_program.client_state_machine as csm
 
 import threading
 
+from parser import *
+
 
 class Client:
     def __init__(self, args):
@@ -64,7 +66,8 @@ class Client:
     def output(self):
         if len(self.system_msg) > 0:
             self.page.views[-1].controls[0].content.controls.append(
-                ft.Text(value=self.system_msg)
+                # ft.Text(value=self.system_msg)
+                ChatMessageReceive(self.system_msg)
             )
             self.page.update()
             self.system_msg = ""

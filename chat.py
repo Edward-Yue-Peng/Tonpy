@@ -1,6 +1,7 @@
 import flet as ft
 import threading
 from chat_program.chat_client_class import *
+from parser import *
 
 
 def chat_view(page: ft.Page, client):
@@ -16,7 +17,9 @@ def chat_view(page: ft.Page, client):
 
     def send_message_click(e):
         if new_message.value != "":
-            chat.controls.append(ft.Text(new_message.value))
+            chat.controls.append(
+                ChatMessageSent(new_message.value, page.session.get("usrname"))
+            )
             client.read_input(new_message.value)
         new_message.value = ""
         new_message.focus()
