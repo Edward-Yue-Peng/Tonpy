@@ -3,7 +3,7 @@ import threading
 from chat_program.chat_client_class import *
 
 
-def chat_view(page: ft.Page):
+def chat_view(page: ft.Page, client):
     page.title = "Tonpy"
     page.update()
 

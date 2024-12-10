@@ -16,10 +16,7 @@ def main(page: ft.Page):
             page.update()
         elif page.route == "/chat":
             try:
-                page.views.append(chat_view(page))
-                page.update()
                 client = Client(page.session.get("server_addr"))
-                client.init_chat()
                 # if client.exception:
                 #     page.session.set("exception", "server_addr")
                 #     return ft.View(
@@ -37,6 +34,9 @@ def main(page: ft.Page):
                 #             )
                 #         ],
                 #     )
+                page.views.append(chat_view(page, client))
+                page.update()
+                client.init_chat()
                 client_thread = threading.Thread(
                     target=client.run_chat, args=[page], daemon=True
                 )
