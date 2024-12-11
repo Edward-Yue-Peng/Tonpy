@@ -14,6 +14,7 @@ def chat_view(page: ft.Page, client: Client):
         spacing=10,
         auto_scroll=True,
     )
+
     def send_message_click(e):
         if new_message.value != "":
             chat.controls.append(
@@ -48,16 +49,15 @@ def chat_view(page: ft.Page, client: Client):
         game_choose.open = True
         page.update()
 
-    def gobang_choose(e):
-        client.read_input("gobang_invite")
+    def five_row_choose(e):
+        client.read_input("five_row_invite")
         page.close_dialog()
 
-    
     game_choose = ft.AlertDialog(
         title=ft.Text("Game center"),
         content=ft.Column(
             controls=[
-                ft.TextButton("Gobang", on_click=gobang_choose),
+                ft.TextButton("Five-in-a-row", on_click=five_row_choose),
                 ft.TextButton("Something else", on_click=lambda e: page.close_dialog()),
             ]
         ),

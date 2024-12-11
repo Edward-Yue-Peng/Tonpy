@@ -111,9 +111,18 @@ class Client:
         self.output()
         while self.sm.get_state() != S_OFFLINE:
             self.proc()
-            self.output()
             # print("running")
             time.sleep(CHAT_WAIT)
+            if self.sm.get_state() == S_FIVE_ROW_START:
+                # TODO is it correct?
+                page.go("/five_row")
+            if self.sm.get_state() == S_GAMING_FIVEROW_YOUR_TURN:
+                page.title = "Your turn"
+                print("Your turn")
+            
+            else:
+                self.output()
+            self.page.update()
         self.quit()
 
     # ==============================================================================

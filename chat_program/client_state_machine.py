@@ -1,3 +1,4 @@
+import random
 from chat_program.chat_utils import *
 import json
 from parser import *
@@ -71,7 +72,7 @@ class ClientSM:
                     self.out_msg += "Here are all the users in the system:\n"
                     self.out_msg += logged_in
 
-                elif my_msg == "gobang_invite":
+                elif my_msg == "five_row_invite":
                     self.out_msg += "You need someone to play with"
 
                 elif my_msg[0] == "c":
@@ -126,15 +127,15 @@ class ClientSM:
                     self.disconnect()
                     self.state = S_LOGGEDIN
                     self.peer = ""
-                elif my_msg == "gobang_invite":
+                elif my_msg == "five_row_invite":
                     mysend(
                         self.s,
-                        json.dumps({"action": "game_invite", "game": "gobang"}),
+                        json.dumps({"action": "game_invite", "game": "five_row"}),
                     )
                     # response = json.loads(myrecv(self.s))
                     # if response["status"] == "success":
                     #     print("sucess1!!!!!!")
-                    self.out_msg += "Gobang invite sent"
+                    self.out_msg += "five_row invite sent"
                     self.state = S_GAME_INVITING
                 else:
                     mysend(
@@ -157,7 +158,7 @@ class ClientSM:
                     self.out_msg += (
                         peer_msg["game"] + "invite from " + peer_msg["from"] + "\n"
                     )
-                    self.out_msg += "Type 'y' to accept, anything else to decline\n"
+                    self.out_msg += "Type 'y' to y, anything else to decline\n"
                     # TODO should have a GUI dialog box
                     self.state = S_GAME_DECIDING
                 else:
@@ -174,8 +175,8 @@ class ClientSM:
                 peer_msg = json.loads(peer_msg)
                 if peer_msg["response"] == "y":
                     self.out_msg += f"{peer_msg["game"]} game starting\n"
-                    self.state = S_GAMING
-                if peer_msg["response"] == "n":
+                    self.state = S_FIVE_ROW_START
+                if peer_msg["response"] == "decline":
                     self.out_msg += f"{peer_msg["game"]} game declined\n"
                     self.state = S_CHATTING
         elif self.state == S_GAME_DECIDING:
@@ -186,7 +187,7 @@ class ClientSM:
                         json.dumps(
                             {
                                 "action": "game_response",
-                                "game": "gobang",
+                                "game": "five_row",
                                 "response": "y",
                                 "invitation_from": self.peer,
                                 # TODO self.peer should be the actual person who send the invite
@@ -195,23 +196,29 @@ class ClientSM:
                         ),
                     )
                     self.out_msg += f"Game starting\n"
-                    self.state = S_GAMING
+                    self.state = S_FIVE_ROW_START
                 else:
                     mysend(
                         self.s,
                         json.dumps(
                             {
                                 "action": "game_response",
-                                "game": "gobang",
-                                "response": "n",
+                                "game": "five_row",
+                                "response": "decline",
                             }
                             # TODO target should be different by game
                         ),
                     )
-                    self.out_msg += "Gobang game declined\n"
+                    self.out_msg += "five_row game declined\n"
                     self.state = S_CHATTING
-        elif self.state == S_GAMING:
-            pass
+        elif self.state == S_FIVE_ROW_START:
+            if len(peer_msg) > 0:
+                peer_msg = json.loads(peer_msg)
+                if peer_msg["action"] == "game_start":
+                    if peer_msg["turn"] == "you":
+                        self.state = S_GAMING_FIVEROW_YOUR_TURN
+                    if peer_msg["turn"] == "peer":
+                        self.state = S_GAMING_FIVEROW_PEER_TURN
         else:
             self.out_msg += "How did you wind up here??\n"
             print_state(self.state)

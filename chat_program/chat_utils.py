@@ -2,7 +2,7 @@ import socket
 import time
 
 # use local loop back address by default
-CHAT_IP = '127.0.0.1'
+CHAT_IP = "127.0.0.1"
 # CHAT_IP = socket.gethostbyname(socket.gethostname())
 # CHAT_IP = ""
 
@@ -23,7 +23,9 @@ S_LOGGEDIN = 2
 S_CHATTING = 3
 S_GAME_INVITING = 4
 S_GAME_DECIDING = 5
-S_GAMING = 6
+S_FIVE_ROW_START = 6
+S_GAMING_FIVEROW_YOUR_TURN = 7
+S_GAMING_FIVEROW_PEER_TURN = 8
 
 SIZE_SPEC = 5
 
