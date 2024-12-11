@@ -1,29 +1,29 @@
-## Chat Program Êý¾Ý´«Êä¸ñÊ½¿ª·¢ÎÄµµ
+## Chat Program æ•°æ®ä¼ è¾“æ ¼å¼å¼€å‘æ–‡æ¡£
 
-### Êý¾Ý´«Êä¸ñÊ½
-ËùÓÐÊý¾ÝÍ¨¹ý JSON ¸ñÊ½´«Êä£¬°üº¬ÒÔÏÂ»ù±¾×Ö¶Î£º
-- **action**: Ö¸Ã÷µ±Ç°¶¯×÷¡£
-- **ÆäËû×Ö¶Î**: ¸ù¾Ý¾ßÌåµÄ action ¶¨Òå¡£
+### æ•°æ®ä¼ è¾“æ ¼å¼
+æ‰€æœ‰æ•°æ®é€šè¿‡ JSON æ ¼å¼ä¼ è¾“ï¼ŒåŒ…å«ä»¥ä¸‹åŸºæœ¬å­—æ®µï¼š
+- **action**: æŒ‡æ˜Žå½“å‰åŠ¨ä½œã€‚
+- **å…¶ä»–å­—æ®µ**: æ ¹æ®å…·ä½“çš„ action å®šä¹‰ã€‚
 
-#### ³£¼ûµÄÊý¾Ý¸ñÊ½
+#### å¸¸è§çš„æ•°æ®æ ¼å¼
 
-1. **µÇÂ¼ÇëÇó**
-   - **¿Í»§¶Ë·¢ËÍ**£º
+1. **ç™»å½•è¯·æ±‚**
+   - **å®¢æˆ·ç«¯å‘é€**ï¼š
      ```json
      {
          "action": "login",
-         "name": "<ÓÃ»§Ãû>"
+         "name": "<ç”¨æˆ·å>"
      }
      ```
-   - **·þÎñ¶ËÏìÓ¦**£º
-     - µÇÂ¼³É¹¦£º
+   - **æœåŠ¡ç«¯å“åº”**ï¼š
+     - ç™»å½•æˆåŠŸï¼š
        ```json
        {
            "action": "login",
            "status": "ok"
        }
        ```
-     - ÓÃ»§ÃûÖØ¸´£º
+     - ç”¨æˆ·åé‡å¤ï¼š
        ```json
        {
            "action": "login",
@@ -31,37 +31,37 @@
        }
        ```
 
-2. **Á¬½ÓÇëÇó**
-   - **¿Í»§¶Ë·¢ËÍ**£º
+2. **è¿žæŽ¥è¯·æ±‚**
+   - **å®¢æˆ·ç«¯å‘é€**ï¼š
      ```json
      {
          "action": "connect",
-         "target": "<Ä¿±êÓÃ»§Ãû>"
+         "target": "<ç›®æ ‡ç”¨æˆ·å>"
      }
      ```
-   - **·þÎñ¶ËÏìÓ¦**£º
-     - Á¬½Ó³É¹¦£º
+   - **æœåŠ¡ç«¯å“åº”**ï¼š
+     - è¿žæŽ¥æˆåŠŸï¼š
        ```json
        {
            "action": "connect",
            "status": "success"
        }
        ```
-     - ÓÃ»§Ã¦Âµ£º
+     - ç”¨æˆ·å¿™ç¢Œï¼š
        ```json
        {
            "action": "connect",
            "status": "busy"
        }
        ```
-     - ÓÃ»§Ãû²»´æÔÚ£º
+     - ç”¨æˆ·åä¸å­˜åœ¨ï¼š
        ```json
        {
            "action": "connect",
            "status": "no-user"
        }
        ```
-     - ×Ô¼ºÁ¬½Ó×Ô¼º£º
+     - è‡ªå·±è¿žæŽ¥è‡ªå·±ï¼š
        ```json
        {
            "action": "connect",
@@ -69,179 +69,179 @@
        }
        ```
 
-3. **¶Ï¿ªÁ¬½ÓÇëÇó**
-   - **¿Í»§¶Ë·¢ËÍ**£º
+3. **æ–­å¼€è¿žæŽ¥è¯·æ±‚**
+   - **å®¢æˆ·ç«¯å‘é€**ï¼š
      ```json
      {
          "action": "disconnect"
      }
      ```
-   - **·þÎñ¶ËÏìÓ¦**£º
+   - **æœåŠ¡ç«¯å“åº”**ï¼š
      ```json
      {
          "action": "disconnect"
      }
      ```
 
-4. **ÏûÏ¢½»»»**
-   - **¿Í»§¶Ë·¢ËÍ**£º
+4. **æ¶ˆæ¯äº¤æ¢**
+   - **å®¢æˆ·ç«¯å‘é€**ï¼š
      ```json
      {
          "action": "exchange",
-         "from": "<·¢ËÍÕßÓÃ»§Ãû>",
-         "message": "<ÏûÏ¢ÄÚÈÝ>"
+         "from": "<å‘é€è€…ç”¨æˆ·å>",
+         "message": "<æ¶ˆæ¯å†…å®¹>"
      }
      ```
-   - **·þÎñ¶Ë×ª·¢**£º
+   - **æœåŠ¡ç«¯è½¬å‘**ï¼š
      ```json
      {
          "action": "exchange",
-         "from": "<·¢ËÍÕßÓÃ»§Ãû>",
-         "message": "<ÏûÏ¢ÄÚÈÝ>"
+         "from": "<å‘é€è€…ç”¨æˆ·å>",
+         "message": "<æ¶ˆæ¯å†…å®¹>"
      }
      ```
 
-5. **»ñÈ¡ÔÚÏßÓÃ»§ÁÐ±í**
-   - **¿Í»§¶Ë·¢ËÍ**£º
+5. **èŽ·å–åœ¨çº¿ç”¨æˆ·åˆ—è¡¨**
+   - **å®¢æˆ·ç«¯å‘é€**ï¼š
      ```json
      {
          "action": "list"
      }
      ```
-   - **·þÎñ¶ËÏìÓ¦**£º
+   - **æœåŠ¡ç«¯å“åº”**ï¼š
      ```json
      {
          "action": "list",
-         "results": "<ÔÚÏßÓÃ»§ÁÐ±í>"
+         "results": "<åœ¨çº¿ç”¨æˆ·åˆ—è¡¨>"
      }
      ```
 
-6. **»ñÈ¡Ê±¼ä**
-   - **¿Í»§¶Ë·¢ËÍ**£º
+6. **èŽ·å–æ—¶é—´**
+   - **å®¢æˆ·ç«¯å‘é€**ï¼š
      ```json
      {
          "action": "time"
      }
      ```
-   - **·þÎñ¶ËÏìÓ¦**£º
+   - **æœåŠ¡ç«¯å“åº”**ï¼š
      ```json
      {
          "action": "time",
-         "results": "<µ±Ç°Ê±¼ä>"
+         "results": "<å½“å‰æ—¶é—´>"
      }
      ```
 
-7. **ËÑË÷ÀúÊ·ÏûÏ¢**
-   - **¿Í»§¶Ë·¢ËÍ**£º
+7. **æœç´¢åŽ†å²æ¶ˆæ¯**
+   - **å®¢æˆ·ç«¯å‘é€**ï¼š
      ```json
      {
          "action": "search",
-         "target": "<ËÑË÷¹Ø¼ü´Ê>"
+         "target": "<æœç´¢å…³é”®è¯>"
      }
      ```
-   - **·þÎñ¶ËÏìÓ¦**£º
+   - **æœåŠ¡ç«¯å“åº”**ï¼š
      ```json
      {
          "action": "search",
-         "results": "<ËÑË÷½á¹û>"
+         "results": "<æœç´¢ç»“æžœ>"
      }
      ```
 
-8. **ÇëÇóÊ«¾ä**
-   - **¿Í»§¶Ë·¢ËÍ**£º
+8. **è¯·æ±‚è¯—å¥**
+   - **å®¢æˆ·ç«¯å‘é€**ï¼š
      ```json
      {
          "action": "poem",
-         "target": <Ê«¾ä±àºÅ>
+         "target": <è¯—å¥ç¼–å·>
      }
      ```
-   - **·þÎñ¶ËÏìÓ¦**£º
+   - **æœåŠ¡ç«¯å“åº”**ï¼š
      ```json
      {
          "action": "poem",
-         "results": "<Ê«¾äÄÚÈÝ>"
+         "results": "<è¯—å¥å†…å®¹>"
      }
      ```
 
-9. **ÓÎÏ·ÑûÇë**
-   - **¿Í»§¶Ë·¢ËÍ**£º
+9. **æ¸¸æˆé‚€è¯·**
+   - **å®¢æˆ·ç«¯å‘é€**ï¼š
      ```json
      {
          "action": "game_invite",
-         "game": "<ÓÎÏ·Ãû³Æ>"
+         "game": "<æ¸¸æˆåç§°>"
      }
      ```
-   - **·þÎñ¶Ë×ª·¢**£º
+   - **æœåŠ¡ç«¯è½¬å‘**ï¼š
      ```json
      {
          "action": "game_invite",
-         "game": "<ÓÎÏ·Ãû³Æ>",
-         "from": "<·¢ËÍÕßÓÃ»§Ãû>"
+         "game": "<æ¸¸æˆåç§°>",
+         "from": "<å‘é€è€…ç”¨æˆ·å>"
      }
      ```
 
-10. **ÓÎÏ·ÑûÇëÏìÓ¦**
-    - **¿Í»§¶Ë·¢ËÍ**£º
+10. **æ¸¸æˆé‚€è¯·å“åº”**
+    - **å®¢æˆ·ç«¯å‘é€**ï¼š
       ```json
       {
           "action": "game_response",
-          "game": "<ÓÎÏ·Ãû³Æ>",
+          "game": "<æ¸¸æˆåç§°>",
           "response": "y/n",
-          "invitation_from": "<ÑûÇëÕßÓÃ»§Ãû>"
+          "invitation_from": "<é‚€è¯·è€…ç”¨æˆ·å>"
       }
       ```
-    - **·þÎñ¶Ë×ª·¢**£º
+    - **æœåŠ¡ç«¯è½¬å‘**ï¼š
       ```json
       {
           "action": "game_response",
-          "game": "<ÓÎÏ·Ãû³Æ>",
+          "game": "<æ¸¸æˆåç§°>",
           "response": "y/n",
-          "from": "<·¢ËÍÕßÓÃ»§Ãû>"
+          "from": "<å‘é€è€…ç”¨æˆ·å>"
       }
       ```
 
-### ×´Ì¬ÓëÐÐÎª
+### çŠ¶æ€ä¸Žè¡Œä¸º
 
-#### ×´Ì¬ÁÐ±í
-- **S_OFFLINE**: ÀëÏß×´Ì¬¡£
-- **S_LOGGEDIN**: µÇÂ¼×´Ì¬¡£
-- **S_CHATTING**: ÁÄÌì×´Ì¬¡£
-- **S_GAME_INVITING**: ÓÎÏ·ÑûÇë·¢ËÍ×´Ì¬¡£
-- **S_GAME_DECIDING**: ÓÎÏ·ÑûÇë¾ö¶¨×´Ì¬¡£
-- **S_GAMING**: ÓÎÏ·½øÐÐ×´Ì¬¡£
+#### çŠ¶æ€åˆ—è¡¨
+- **S_OFFLINE**: ç¦»çº¿çŠ¶æ€ã€‚
+- **S_LOGGEDIN**: ç™»å½•çŠ¶æ€ã€‚
+- **S_CHATTING**: èŠå¤©çŠ¶æ€ã€‚
+- **S_GAME_INVITING**: æ¸¸æˆé‚€è¯·å‘é€çŠ¶æ€ã€‚
+- **S_GAME_DECIDING**: æ¸¸æˆé‚€è¯·å†³å®šçŠ¶æ€ã€‚
+- **S_GAMING**: æ¸¸æˆè¿›è¡ŒçŠ¶æ€ã€‚
 
-#### ×´Ì¬ÐÐÎª
+#### çŠ¶æ€è¡Œä¸º
 1. **S_OFFLINE**
-   - **½ÓÊÕÏûÏ¢**£ºÎÞ¡£
-   - **·¢ËÍÏûÏ¢**£ºµÇÂ¼¡£
+   - **æŽ¥æ”¶æ¶ˆæ¯**ï¼šæ— ã€‚
+   - **å‘é€æ¶ˆæ¯**ï¼šç™»å½•ã€‚
 
 2. **S_LOGGEDIN**
-   - **½ÓÊÕÏûÏ¢**£º
-     - ÊÕµ½Á¬½ÓÇëÇó£¬ÇÐ»»µ½ S_CHATTING¡£
-     - ÊÕµ½ÏûÏ¢»òÖ¸Áî£¬Ö´ÐÐ¶ÔÓ¦²Ù×÷£¨»ñÈ¡Ê±¼ä¡¢»ñÈ¡ÓÃ»§ÁÐ±í¡¢ËÑË÷¡¢ÇëÇóÊ«¾ä£©¡£
+   - **æŽ¥æ”¶æ¶ˆæ¯**ï¼š
+     - æ”¶åˆ°è¿žæŽ¥è¯·æ±‚ï¼Œåˆ‡æ¢åˆ° S_CHATTINGã€‚
+     - æ”¶åˆ°æ¶ˆæ¯æˆ–æŒ‡ä»¤ï¼Œæ‰§è¡Œå¯¹åº”æ“ä½œï¼ˆèŽ·å–æ—¶é—´ã€èŽ·å–ç”¨æˆ·åˆ—è¡¨ã€æœç´¢ã€è¯·æ±‚è¯—å¥ï¼‰ã€‚
 
 3. **S_CHATTING**
-   - **½ÓÊÕÏûÏ¢**£º
-     - ÊÕµ½¶Ô·½ÏûÏ¢£¬ÏÔÊ¾¡£
-     - ÊÕµ½ÓÎÏ·ÑûÇë£¬ÇÐ»»µ½ S_GAME_DECIDING¡£
-   - **·¢ËÍÏûÏ¢**£º
-     - ÆÕÍ¨ÁÄÌìÏûÏ¢¡£
-     - ÓÎÏ·ÑûÇë£¬ÇÐ»»µ½ S_GAME_INVITING¡£
+   - **æŽ¥æ”¶æ¶ˆæ¯**ï¼š
+     - æ”¶åˆ°å¯¹æ–¹æ¶ˆæ¯ï¼Œæ˜¾ç¤ºã€‚
+     - æ”¶åˆ°æ¸¸æˆé‚€è¯·ï¼Œåˆ‡æ¢åˆ° S_GAME_DECIDINGã€‚
+   - **å‘é€æ¶ˆæ¯**ï¼š
+     - æ™®é€šèŠå¤©æ¶ˆæ¯ã€‚
+     - æ¸¸æˆé‚€è¯·ï¼Œåˆ‡æ¢åˆ° S_GAME_INVITINGã€‚
 
 4. **S_GAME_INVITING**
-   - **½ÓÊÕÏûÏ¢**£º
-     - ÓÎÏ·ÑûÇë±»½ÓÊÜ£¬ÇÐ»»µ½ S_GAMING¡£
-     - ÓÎÏ·ÑûÇë±»¾Ü¾ø£¬·µ»Ø S_CHATTING¡£
+   - **æŽ¥æ”¶æ¶ˆæ¯**ï¼š
+     - æ¸¸æˆé‚€è¯·è¢«æŽ¥å—ï¼Œåˆ‡æ¢åˆ° S_GAMINGã€‚
+     - æ¸¸æˆé‚€è¯·è¢«æ‹’ç»ï¼Œè¿”å›ž S_CHATTINGã€‚
 
 5. **S_GAME_DECIDING**
-   - **½ÓÊÕÏûÏ¢**£ºÎÞ¡£
-   - **·¢ËÍÏûÏ¢**£º
-     - ½ÓÊÜÓÎÏ·ÑûÇë£¬ÇÐ»»µ½ S_GAMING¡£
-     - ¾Ü¾øÓÎÏ·ÑûÇë£¬·µ»Ø S_CHATTING¡£
+   - **æŽ¥æ”¶æ¶ˆæ¯**ï¼šæ— ã€‚
+   - **å‘é€æ¶ˆæ¯**ï¼š
+     - æŽ¥å—æ¸¸æˆé‚€è¯·ï¼Œåˆ‡æ¢åˆ° S_GAMINGã€‚
+     - æ‹’ç»æ¸¸æˆé‚€è¯·ï¼Œè¿”å›ž S_CHATTINGã€‚
 
 6. **S_GAMING**
-   - **½ÓÊÕÏûÏ¢**£º¸ù¾ÝÓÎÏ·Âß¼­´¦Àí¡£
-   - **·¢ËÍÏûÏ¢**£º¸ù¾ÝÓÎÏ·Âß¼­´¦Àí¡£
+   - **æŽ¥æ”¶æ¶ˆæ¯**ï¼šæ ¹æ®æ¸¸æˆé€»è¾‘å¤„ç†ã€‚
+   - **å‘é€æ¶ˆæ¯**ï¼šæ ¹æ®æ¸¸æˆé€»è¾‘å¤„ç†ã€‚
 
-±¾ÎÄµµÊÊÓÃÓÚ¿ª·¢Óëµ÷ÊÔÊ¹ÓÃ£¬ÇëÈ·±£´«ÊäÄÚÈÝÑÏ¸ñ·ûºÏ¶¨ÒåµÄ¸ñÊ½Óë×´Ì¬»úÂß¼­¡£
+æœ¬æ–‡æ¡£é€‚ç”¨äºŽå¼€å‘ä¸Žè°ƒè¯•ä½¿ç”¨ï¼Œè¯·ç¡®ä¿ä¼ è¾“å†…å®¹ä¸¥æ ¼ç¬¦åˆå®šä¹‰çš„æ ¼å¼ä¸ŽçŠ¶æ€æœºé€»è¾‘ã€‚
 
