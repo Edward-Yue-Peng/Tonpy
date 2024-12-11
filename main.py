@@ -2,7 +2,7 @@ import flet as ft
 from chat_program.chat_client_class import *
 from login import login_view
 from chat import chat_view
-from gobang import gobang_view
+from five_row import five_row_view
 
 
 def main(page: ft.Page):
@@ -26,8 +26,8 @@ def main(page: ft.Page):
             )
             client_thread.start()
             client.read_input(page.session.get("usrname"))
-        elif page.route == "/gobang":
-            page.views.append(gobang_view(page, client))
+        elif page.route == "/five_row":
+            page.views.append(five_row_view(page, client))
             page.update()
 
     page.on_route_change = route_change

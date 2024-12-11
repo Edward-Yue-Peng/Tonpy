@@ -1,3 +1,4 @@
+import random
 import time
 import socket
 import select
@@ -125,7 +126,7 @@ class Server:
                     msg = json.dumps({"action": "connect", "status": "no-user"})
                 mysend(from_sock, msg)
             # ==============================================================================
-            # handle game message: one peer for now. will need multicast later
+            # handle game message
             # ==============================================================================
             elif msg["action"] == "game_invite":
                 game = msg["game"]
@@ -133,7 +134,7 @@ class Server:
                 to_name = self.group.list_me(from_name)[1]
                 to_sock = self.logged_name2sock[to_name]
                 # TODO golang can only be played by two people
-                
+
                 mysend(
                     to_sock,
                     json.dumps(
@@ -155,6 +156,54 @@ class Server:
                         }
                     ),
                 )
+                if msg["response"] == "y":
+                    # here to decide who serve first
+                    if random.choice([True, False]):
+                        mysend(
+                            from_sock,
+                            json.dumps(
+                                {
+                                    "action": "game_start",
+                                    "game": "five_row",
+                                    "turn": "you",
+                                }
+                            ),
+                        )
+                        mysend(
+                            to_sock,
+                            json.dumps(
+                                {
+                                    "action": "game_start",
+                                    "game": "five_row",
+                                    "turn": "peer",
+                                }
+                            ),
+                        )
+                    else:
+                        mysend(
+                            from_sock,
+                            json.dumps(
+                                {
+                                    "action": "game_start",
+                                    "game": "five_row",
+                                    "turn": "peer",
+                                }
+                            ),
+                        )
+                        mysend(
+                            to_sock,
+                            json.dumps(
+                                {
+                                    "action": "game_start",
+                                    "game": "five_row",
+                                    "turn": "you",
+                                }
+                            ),
+                        )
+                    print("send")
+            elif msg["action"] == "five_row_wait":
+                pass
+            
             # ==============================================================================
             # handle messeage exchange: one peer for now. will need multicast later
             # ==============================================================================

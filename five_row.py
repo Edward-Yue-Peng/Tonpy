@@ -1,18 +1,20 @@
 import flet as ft
+from chat_program.chat_client_class import *
 
 BOARD_SIZE = 15
 
 
-def gobang_view(page: ft.Page, client):
-    page.title = "Golang"
+def five_row_view(page: ft.Page, client: Client):
+    page.title = "Five-in-a-row"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     board = [[0] * BOARD_SIZE for _ in range(BOARD_SIZE)]
     status = ft.Text("当前玩家：黑棋", size=20)
     game_over = False
-    
+
     def on_quit(e):
-        page.go("/game")
+        page.go("/chat")
+        client.state = S_CHATTING
         # TODO: quit game
 
     def check_winner(x, y, player):
@@ -49,7 +51,10 @@ def gobang_view(page: ft.Page, client):
             return
         x, y = e.control.data
         print(x, y)
+        client.read_input(f"five_row_move {x} {y}")
+
         if board[x][y] == 0:
+            client.read_input(f"five_row_move {x} {y}")
             if status.value == "当前玩家：黑棋":
                 board[x][y] = 1
                 e.control.content = ft.Container(
@@ -101,7 +106,7 @@ def gobang_view(page: ft.Page, client):
         route="/game",
         controls=[
             ft.AppBar(
-                title=ft.Text(f"Gobang", weight="bold"),
+                title=ft.Text(f"Five-in-a-row", weight="bold"),
                 leading=ft.IconButton(
                     icon=ft.icons.ARROW_BACK,
                     tooltip="Quit",
