@@ -14,6 +14,7 @@ def chat_view(page: ft.Page, client: Client):
         spacing=10,
         auto_scroll=True,
     )
+
     def send_message_click(e):
         if new_message.value != "":
             chat.controls.append(
@@ -30,6 +31,10 @@ def chat_view(page: ft.Page, client: Client):
 
     def list_users(e):
         client.read_input("who")
+
+    def logout(e):
+        client.read_input("q")
+        page.go("/login")
 
     # A new message entry form
     new_message = ft.TextField(
@@ -52,7 +57,6 @@ def chat_view(page: ft.Page, client: Client):
         client.read_input("gobang_invite")
         page.close_dialog()
 
-    
     game_choose = ft.AlertDialog(
         title=ft.Text("Game center"),
         content=ft.Column(
@@ -66,15 +70,15 @@ def chat_view(page: ft.Page, client: Client):
     # Add everything to the page
     return ft.View(
         route="/chat",
-        appbar=ft.AppBar(
-            title=ft.Text(f"Tonpy"),
-            leading=ft.IconButton(
-                icon=ft.icons.ARROW_BACK,
-                tooltip="Logout",
-                on_click=lambda e: page.go("/login"),
-                # TODO 登出
-            ),
-        ),
+        # appbar=ft.AppBar(
+        #     title=ft.Text(f"Tonpy"),
+        #     leading=ft.IconButton(
+        #         icon=ft.icons.ARROW_BACK,
+        #         tooltip="Logout",
+        #         on_click=lambda e: page.go("/login"),
+        #         # TODO 登出
+        #     ),
+        # ),
         controls=[
             ft.Container(
                 content=chat,
@@ -90,13 +94,19 @@ def chat_view(page: ft.Page, client: Client):
                         icon=ft.Icons.PEOPLE_ROUNDED,
                         tooltip="Find out who else is here",
                         on_click=list_users,
-                    )
+                    ),
+                    ft.FilledButton(
+                        "Logout",
+                        icon=ft.Icons.LOGOUT_ROUNDED,
+                        bgcolor="red",
+                        on_click=logout,
+                    ),
                 ]
             ),
             ft.Row(
                 [
                     ft.IconButton(
-                        icon=ft.icons.VIDEOGAME_ASSET,
+                        icon=ft.Icons.VIDEOGAME_ASSET,
                         tooltip="Game",
                         on_click=game_click,
                     ),

@@ -1,6 +1,7 @@
 from chat_program.chat_utils import *
 import json
 from parser import *
+import flet as ft
 
 
 class ClientSM:
@@ -57,7 +58,7 @@ class ClientSM:
             if len(my_msg) > 0:
 
                 if my_msg == "q":
-                    self.out_msg += "See you next time!\n"
+                    # self.out_msg += "See you next time!\n"
                     self.state = S_OFFLINE
 
                 elif my_msg == "time":
