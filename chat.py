@@ -13,6 +13,7 @@ def chat_view(page: ft.Page, client: Client):
         expand=True,
         spacing=10,
         auto_scroll=True,
+        controls=page.session.get("chat_history")
     )
 
     def send_message_click(e):
@@ -49,24 +50,27 @@ def chat_view(page: ft.Page, client: Client):
     )
 
     def game_click(e):
-        page.dialog = game_choose
+        page.overlay.append(game_choose)
         game_choose.open = True
         page.update()
 
-    def five_row_choose(e):
-        client.read_input("five_row_invite")
-        page.close_dialog()
+    def gomoku_choose(e):
+        client.read_input("gomoku_invite")
+        page.close(game_choose)
 
     game_choose = ft.AlertDialog(
         title=ft.Text("Game center"),
         content=ft.Column(
             controls=[
-                ft.TextButton("Five-in-a-row", on_click=five_row_choose),
-                ft.TextButton("Something else", on_click=lambda e: page.close_dialog()),
+                ft.TextButton("gomoku", on_click=gomoku_choose),
+                ft.TextButton(
+                    "Something else", on_click=lambda _: page.close(game_choose)
+                ),
             ]
         ),
-        actions=[ft.TextButton("Cancel", on_click=lambda e: page.close_dialog())],
+        actions=[ft.TextButton("Cancel", on_click=lambda _: page.close(game_choose))],
     )
+
     # Add everything to the page
     return ft.View(
         route="/chat",

@@ -24,6 +24,7 @@ class Client:
         self.exception = ""
 
     def quit(self):
+        self.page.session.set("chat_history", None)
         self.socket.shutdown(socket.SHUT_RDWR)
         self.socket.close()
 
@@ -65,10 +66,25 @@ class Client:
 
     def output(self):
         if len(self.system_msg) > 0:
-            self.page.views[-1].controls[0].content.controls.append(
-                # ft.Text(value=self.system_msg)
-                ChatMessageReceive(self.system_msg)
-            )
+            try:
+                msg = json.loads(self.system_msg)
+                if msg["action"] == "gomoku_move":
+                    control = (
+                        self.page.views[-1]
+                        .controls[-1]
+                        .controls[(msg["coord"]["x"]) * 15 + msg["coord"]["y"]]
+                    )
+                    e = FletEvent(control)
+                    control.on_click(e)
+            except:
+                print("msg:", self.system_msg)
+                self.page.views[-1].controls[0].content.controls.append(
+                    # ft.Text(value=self.system_msg)
+                    ChatMessageReceive(self.system_msg)
+                )
+                self.page.session.set(
+                    "chat_history", self.page.views[-1].controls[0].content.controls
+                )
             self.page.update()
             self.system_msg = ""
 
@@ -113,13 +129,13 @@ class Client:
             self.proc()
             # print("running")
             time.sleep(CHAT_WAIT)
-            if self.sm.get_state() == S_FIVE_ROW_START:
+            if self.sm.get_state() == S_GOMOKU_START:
                 # TODO is it correct?
-                page.go("/five_row")
-            if self.sm.get_state() == S_GAMING_FIVEROW_YOUR_TURN:
+                page.go("/gomoku")
+            if self.sm.get_state() == S_GAMING_GOMOKU_YOUR_TURN:
                 page.title = "Your turn"
                 print("Your turn")
-            
+
             else:
                 self.output()
             self.page.update()

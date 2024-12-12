@@ -4,8 +4,8 @@ from chat_program.chat_client_class import *
 BOARD_SIZE = 15
 
 
-def five_row_view(page: ft.Page, client: Client):
-    page.title = "Five-in-a-row"
+def gomoku_view(page: ft.Page, client: Client):
+    page.title = "Gomoku"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     board = [[0] * BOARD_SIZE for _ in range(BOARD_SIZE)]
@@ -50,11 +50,9 @@ def five_row_view(page: ft.Page, client: Client):
         if game_over:
             return
         x, y = e.control.data
-        print(x, y)
-        client.read_input(f"five_row_move {x} {y}")
-
+        # client.read_input(f'gomoku_move {{"x":{x},"y":{y}}}')
         if board[x][y] == 0:
-            client.read_input(f"five_row_move {x} {y}")
+            client.read_input(f'gomoku_move {{"x":{x},"y":{y}}}')
             if status.value == "当前玩家：黑棋":
                 board[x][y] = 1
                 e.control.content = ft.Container(
@@ -84,8 +82,10 @@ def five_row_view(page: ft.Page, client: Client):
             page.update()
 
     grid = ft.GridView(
-        expand=True,
+        width=450,
+        height=450,
         max_extent=30,
+        expand=True,
         child_aspect_ratio=1.0,
         spacing=2,
         run_spacing=2,
@@ -106,9 +106,9 @@ def five_row_view(page: ft.Page, client: Client):
         route="/game",
         controls=[
             ft.AppBar(
-                title=ft.Text(f"Five-in-a-row", weight="bold"),
+                title=ft.Text(f"gomoku", weight="bold"),
                 leading=ft.IconButton(
-                    icon=ft.icons.ARROW_BACK,
+                    icon=ft.Icons.ARROW_BACK,
                     tooltip="Quit",
                     on_click=on_quit,
                 ),

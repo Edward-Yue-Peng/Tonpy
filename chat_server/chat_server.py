@@ -164,7 +164,7 @@ class Server:
                             json.dumps(
                                 {
                                     "action": "game_start",
-                                    "game": "five_row",
+                                    "game": "gomoku",
                                     "turn": "you",
                                 }
                             ),
@@ -174,7 +174,7 @@ class Server:
                             json.dumps(
                                 {
                                     "action": "game_start",
-                                    "game": "five_row",
+                                    "game": "gomoku",
                                     "turn": "peer",
                                 }
                             ),
@@ -185,7 +185,7 @@ class Server:
                             json.dumps(
                                 {
                                     "action": "game_start",
-                                    "game": "five_row",
+                                    "game": "gomoku",
                                     "turn": "peer",
                                 }
                             ),
@@ -195,15 +195,19 @@ class Server:
                             json.dumps(
                                 {
                                     "action": "game_start",
-                                    "game": "five_row",
+                                    "game": "gomoku",
                                     "turn": "you",
                                 }
                             ),
                         )
                     print("send")
-            elif msg["action"] == "five_row_wait":
+            elif msg["action"] == "gomoku_wait":
                 pass
-            
+            elif msg["action"] == "gomoku_move":
+                from_name = self.logged_sock2name[from_sock]
+                to_name = self.group.list_me(from_name)[1]
+                to_sock = self.logged_name2sock[to_name]
+                mysend(to_sock, json.dumps(msg))
             # ==============================================================================
             # handle messeage exchange: one peer for now. will need multicast later
             # ==============================================================================

@@ -48,3 +48,8 @@ class ChatMessageReceive(ft.Row):
                 expand=True,
             )
         ]
+
+
+class FletEvent:
+    def __init__(self, control):
+        self.control = control

@@ -73,7 +73,7 @@ class ClientSM:
                     self.out_msg += "Here are all the users in the system:\n"
                     self.out_msg += logged_in
 
-                elif my_msg == "five_row_invite":
+                elif my_msg == "gomoku_invite":
                     self.out_msg += "You need someone to play with"
 
                 elif my_msg[0] == "c":
@@ -128,15 +128,15 @@ class ClientSM:
                     self.disconnect()
                     self.state = S_LOGGEDIN
                     self.peer = ""
-                elif my_msg == "five_row_invite":
+                elif my_msg == "gomoku_invite":
                     mysend(
                         self.s,
-                        json.dumps({"action": "game_invite", "game": "five_row"}),
+                        json.dumps({"action": "game_invite", "game": "gomoku"}),
                     )
                     # response = json.loads(myrecv(self.s))
                     # if response["status"] == "success":
                     #     print("sucess1!!!!!!")
-                    self.out_msg += "five_row invite sent"
+                    self.out_msg += "gomoku invite sent"
                     self.state = S_GAME_INVITING
                 else:
                     mysend(
@@ -175,8 +175,8 @@ class ClientSM:
             if len(peer_msg) > 0:
                 peer_msg = json.loads(peer_msg)
                 if peer_msg["response"] == "y":
-                    self.out_msg += f"{peer_msg["game"]} game starting\n"
-                    self.state = S_FIVE_ROW_START
+                    # self.out_msg += f"{peer_msg["game"]} game starting\n"
+                    self.state = S_GOMOKU_START
                 if peer_msg["response"] == "decline":
                     self.out_msg += f"{peer_msg["game"]} game declined\n"
                     self.state = S_CHATTING
@@ -188,7 +188,7 @@ class ClientSM:
                         json.dumps(
                             {
                                 "action": "game_response",
-                                "game": "five_row",
+                                "game": "gomoku",
                                 "response": "y",
                                 "invitation_from": self.peer,
                                 # TODO self.peer should be the actual person who send the invite
@@ -196,30 +196,38 @@ class ClientSM:
                             }
                         ),
                     )
-                    self.out_msg += f"Game starting\n"
-                    self.state = S_FIVE_ROW_START
+                    # self.out_msg += f"Game starting\n"
+                    self.state = S_GOMOKU_START
                 else:
                     mysend(
                         self.s,
                         json.dumps(
                             {
                                 "action": "game_response",
-                                "game": "five_row",
+                                "game": "gomoku",
                                 "response": "decline",
                             }
                             # TODO target should be different by game
                         ),
                     )
-                    self.out_msg += "five_row game declined\n"
+                    self.out_msg += "gomoku game declined\n"
                     self.state = S_CHATTING
-        elif self.state == S_FIVE_ROW_START:
+        elif self.state == S_GOMOKU_START:
             if len(peer_msg) > 0:
                 peer_msg = json.loads(peer_msg)
                 if peer_msg["action"] == "game_start":
                     if peer_msg["turn"] == "you":
-                        self.state = S_GAMING_FIVEROW_YOUR_TURN
+                        self.state = S_GAMING_GOMOKU_YOUR_TURN
                     if peer_msg["turn"] == "peer":
-                        self.state = S_GAMING_FIVEROW_PEER_TURN
+                        self.state = S_GAMING_GOMOKU_PEER_TURN
+        elif self.state == S_GAMING_GOMOKU_YOUR_TURN:
+            if my_msg.startswith("gomoku_move"):
+                print(my_msg)
+                coord = json.loads(my_msg[12:])
+                mysend(self.s, json.dumps({"action": "gomoku_move", "coord": coord}))
+        elif self.state == S_GAMING_GOMOKU_PEER_TURN:
+            if len(peer_msg) > 0:
+                self.out_msg += peer_msg
         else:
             self.out_msg += "How did you wind up here??\n"
             print_state(self.state)
