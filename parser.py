@@ -66,23 +66,38 @@ def parse(msg, page=None, output=None):
                 spacing=10,
                 auto_scroll=True,
             )
+            grpList = ft.ListView(
+                expand=True,
+                spacing=10,
+                auto_scroll=True,
+            )
             self = page.session.get("usrname")
-            for user, status in msg["results"]["users"].items():
-                if status == 0 and user != self:
+            for idx, users in msg["results"]["users"].items():
+                if users == 0 and idx != self:
                     usrList.controls.append(
                         ft.OutlinedButton(
-                            text=user,
+                            text=idx,
                             on_click=lambda e: output("c " + e.control.text),
                             width=300,
                         )
                     )
-            if len(usrList.controls):
+            for idx, users in msg["results"]["groups"].items():
+                grpList.controls.append(
+                    ft.OutlinedButton(
+                        text=users.join(", "),
+                        on_click=lambda e: output("c " + e.control.text.split(", ")[0]),
+                        width=300,
+                    )
+                )
+
+            if len(usrList.controls) or len(grpList.controls):
                 return ft.Container(
                     content=ft.Column(
                         [
                             ft.Text("System", weight="bold"),
                             ft.Text("Please select the users to connect"),
                             usrList,
+                            grpList,
                         ],
                         tight=True,
                         spacing=5,

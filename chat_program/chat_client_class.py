@@ -150,8 +150,8 @@ class Client:
 
     def run_chat(self, page):
         self.page = page
-        self.system_msg += "Welcome to ICS chat\n"
-        self.system_msg += "Please enter your name: "
+        # self.system_msg += "Welcome to ICS chat\n"
+        # self.system_msg += "Please enter your name: "
         self.output()
 
         while self.login() != True:
