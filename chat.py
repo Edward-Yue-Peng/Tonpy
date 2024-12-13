@@ -72,14 +72,14 @@ def chat_view(page: ft.Page, client: Client):
         client.read_input(f"? {number}")
 
     def search_click(e):
-        text_field = ft.TextField()
+        text_field = ft.TextField(on_submit=lambda e: submit_search(text_field.value))
         global search_dialog
         search_dialog = ft.AlertDialog(
             title=ft.Text("Search your words"),
             content=text_field,
             actions=[
                 ft.TextButton(
-                    text="Get it", on_click=lambda e: submit_search(text_field.value)
+                    text="submit", on_click=lambda e: submit_search(text_field.value)
                 )
             ],
         )
