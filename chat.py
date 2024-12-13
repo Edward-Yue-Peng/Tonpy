@@ -2,6 +2,7 @@ import flet as ft
 import threading
 from chat_program.chat_client_class import *
 from parser import *
+import datetime
 
 
 def chat_view(page: ft.Page, client: Client):
@@ -13,7 +14,7 @@ def chat_view(page: ft.Page, client: Client):
         expand=True,
         spacing=10,
         auto_scroll=True,
-        controls=page.session.get("chat_history")
+        controls=page.session.get("chat_history"),
     )
 
     def send_message_click(e):
@@ -26,16 +27,44 @@ def chat_view(page: ft.Page, client: Client):
         new_message.focus()
         page.update()
 
-    def game_click(e):
-        page.go("/game")
-        pass
-
     def list_users(e):
         client.read_input("who")
 
     def logout(e):
         client.read_input("q")
         page.go("/login")
+
+    def time(e):
+        time = ft.AlertDialog(
+            title=ft.Text("Time"),
+            content=ft.Text(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+            actions=[ft.TextButton("Cancel", on_click=lambda _: page.close(time))],
+        )
+        page.overlay.append(time)
+        time.open = True
+        page.update()
+
+    def submit_poem(number):
+        poem_dialog.open = False  # 关闭对话框
+        page.update()  # 刷新页面
+        client.read_input(f"p{number}")
+
+    def poem(e):
+        text_field = ft.TextField(hint_text="Enter the chapter")
+
+        global poem_dialog  # 声明为全局变量，以便在其他函数中访问
+        poem_dialog = ft.AlertDialog(
+            title=ft.Text("Get your poem!"),
+            content=text_field,
+            actions=[
+                ft.TextButton(
+                    text="Get it", on_click=lambda e: submit_poem(text_field.value)
+                )
+            ],
+        )
+        page.dialog = poem_dialog  # 将对话框添加到页面
+        poem_dialog.open = True  # 打开对话框
+        page.update()  # 刷新页面
 
     # A new message entry form
     new_message = ft.TextField(
@@ -74,15 +103,14 @@ def chat_view(page: ft.Page, client: Client):
     # Add everything to the page
     return ft.View(
         route="/chat",
-        # appbar=ft.AppBar(
-        #     title=ft.Text(f"Tonpy"),
-        #     leading=ft.IconButton(
-        #         icon=ft.icons.ARROW_BACK,
-        #         tooltip="Logout",
-        #         on_click=lambda e: page.go("/login"),
-        #         # TODO 登出
-        #     ),
-        # ),
+        appbar=ft.AppBar(
+            title=ft.Text(f"Tonpy"),
+            leading=ft.IconButton(
+                icon=ft.icons.ARROW_BACK,
+                tooltip="Logout",
+                on_click=logout,
+            ),
+        ),
         controls=[
             ft.Container(
                 content=chat,
@@ -94,16 +122,26 @@ def chat_view(page: ft.Page, client: Client):
             ft.Row(
                 [
                     ft.FilledButton(
-                        "list users",
+                        "List users",
                         icon=ft.Icons.PEOPLE_ROUNDED,
                         tooltip="Find out who else is here",
                         on_click=list_users,
                     ),
+                    # ft.FilledButton(
+                    #     "Logout",
+                    #     icon=ft.Icons.LOGOUT_ROUNDED,
+                    #     bgcolor="red",
+                    #     on_click=logout,
+                    # ),
                     ft.FilledButton(
-                        "Logout",
-                        icon=ft.Icons.LOGOUT_ROUNDED,
-                        bgcolor="red",
-                        on_click=logout,
+                        "Time",
+                        icon=ft.Icons.ACCESS_TIME,
+                        on_click=time,
+                    ),
+                    ft.FilledButton(
+                        "Poem",
+                        icon=ft.Icons.BOOK,
+                        on_click=poem,
                     ),
                 ]
             ),
