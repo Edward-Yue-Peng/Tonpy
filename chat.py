@@ -62,9 +62,30 @@ def chat_view(page: ft.Page, client: Client):
                 )
             ],
         )
-        page.dialog = poem_dialog  # 将对话框添加到页面
-        poem_dialog.open = True  # 打开对话框
-        page.update()  # 刷新页面
+        page.dialog = poem_dialog
+        poem_dialog.open = True
+        page.update()
+
+    def submit_search(number):
+        search_dialog.open = False
+        page.update()
+        client.read_input(f"? {number}")
+
+    def search_click(e):
+        text_field = ft.TextField()
+        global search_dialog
+        search_dialog = ft.AlertDialog(
+            title=ft.Text("Search your words"),
+            content=text_field,
+            actions=[
+                ft.TextButton(
+                    text="Get it", on_click=lambda e: submit_search(text_field.value)
+                )
+            ],
+        )
+        page.dialog = search_dialog
+        search_dialog.open = True
+        page.update()
 
     # A new message entry form
     new_message = ft.TextField(
@@ -99,7 +120,7 @@ def chat_view(page: ft.Page, client: Client):
         ),
         actions=[ft.TextButton("Cancel", on_click=lambda _: page.close(game_choose))],
     )
-    list_users_botton = ft.FilledButton(
+    list_users_botton = ft.OutlinedButton(
         "List users",
         icon=ft.Icons.PEOPLE_ROUNDED,
         tooltip="Find out who else is here",
@@ -111,10 +132,18 @@ def chat_view(page: ft.Page, client: Client):
         appbar=ft.AppBar(
             title=ft.Text(f"Tonpy"),
             leading=ft.IconButton(
-                icon=ft.icons.ARROW_BACK,
+                icon=ft.Icons.LOGOUT,
                 tooltip="Logout",
                 on_click=logout,
             ),
+            center_title=True,
+            actions=[
+                ft.IconButton(
+                    icon=ft.Icons.MANAGE_SEARCH,
+                    tooltip="Search",
+                    on_click=search_click,
+                ),
+            ],
         ),
         controls=[
             ft.Container(
@@ -127,18 +156,12 @@ def chat_view(page: ft.Page, client: Client):
             ft.Row(
                 [
                     list_users_botton,
-                    # ft.FilledButton(
-                    #     "Logout",
-                    #     icon=ft.Icons.LOGOUT_ROUNDED,
-                    #     bgcolor="red",
-                    #     on_click=logout,
-                    # ),
-                    ft.FilledButton(
+                    ft.OutlinedButton(
                         "Time",
                         icon=ft.Icons.ACCESS_TIME,
                         on_click=time,
                     ),
-                    ft.FilledButton(
+                    ft.OutlinedButton(
                         "Poem",
                         icon=ft.Icons.BOOK,
                         on_click=poem,
