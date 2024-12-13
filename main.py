@@ -1,3 +1,4 @@
+import threading
 import flet as ft
 from chat_program.chat_client_class import *
 from login import login_view

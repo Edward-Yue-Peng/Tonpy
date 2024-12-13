@@ -6,9 +6,6 @@ import json
 import flet as ft
 from chat_program.chat_utils import *
 import chat_program.client_state_machine as csm
-
-import threading
-
 from parser import *
 
 
@@ -22,6 +19,52 @@ class Client:
         self.peer_msg = ""
         self.args = args
         self.exception = ""
+        self.board = [[0] * 15 for _ in range(15)]  # 棋盘状态
+
+    def init_board(self):
+        self.board = [[0] * 15 for _ in range(15)]
+
+    def place_stone(self, x, y, player_id):
+        self.board[x][y] = player_id
+
+    def get_stone(self, x, y):
+        if 0 <= x < 15 and 0 <= y < 15:
+            return self.board[x][y]
+        return -1
+
+    def check_winner(self, x, y, player_id):
+        directions = [(1, 0), (0, 1), (1, 1), (1, -1)]
+        for dx, dy in directions:
+            count = 1
+            for i in range(1, 5):
+                if self.get_stone(x + dx * i, y + dy * i) == player_id:
+                    count += 1
+                else:
+                    break
+            for i in range(1, 5):
+                if self.get_stone(x - dx * i, y - dy * i) == player_id:
+                    count += 1
+                else:
+                    break
+            if count >= 5:
+                winner = "You" if player_id == 1 else "Opponent"
+                self.system_msg += f"{winner} win!\n"
+                self.page.update()
+                return True
+        return False
+
+    def update_gomoku_move(self, x, y, player="peer"):
+        # 根据player决定颜色
+        color = "red" if player == "me" else "blue"
+        grid = self.page.views[-1].controls[-1]
+        cell = grid.controls[x * 15 + y]
+        cell.content = ft.Container(
+            width=20,
+            height=20,
+            bgcolor=color,
+            border_radius=10,
+        )
+        self.page.update()
 
     def quit(self):
         self.page.session.set("chat_history", None)
@@ -36,13 +79,10 @@ class Client:
         svr = (self.args, CHAT_PORT) if self.args else SERVER
         try:
             self.socket.connect(svr)
-            self.sm = csm.ClientSM(self.socket)
+            self.sm = csm.ClientSM(self.socket, self)
             self.exception = ""
         except Exception as e:
             self.exception = e
-        # reading_thread = threading.Thread(target=self.read_input)
-        # reading_thread.daemon = True
-        # reading_thread.start()
 
     def shutdown_chat(self):
         return
@@ -57,7 +97,6 @@ class Client:
         read, write, error = select.select([self.socket], [], [], 0)
         my_msg = ""
         peer_msg = []
-        # peer_code = M_UNDEF    for json data, peer_code is redundant
         if len(self.console_input) > 0:
             my_msg = self.console_input.pop(0)
         if self.socket in read:
@@ -65,33 +104,59 @@ class Client:
         return my_msg, peer_msg
 
     def output(self):
+        # 只显示非json结构或胜负提示等系统信息
         if len(self.system_msg) > 0:
-
             try:
                 msg = json.loads(self.system_msg)
-                if msg["action"] == "gomoku_move":
-                    x = msg["coord"]["x"]
-                    y = msg["coord"]["y"]
-                    grid = self.page.views[-1].controls[-1]
-                    cell = grid.controls[x * 15 + y]
-                    cell.content = ft.Container(
-                        width=20,
-                        height=20,
-                        bgcolor="blue",
-                        border_radius=10,
-                    )
-                    self.page.update()
             except:
-                print("msg:", self.system_msg)
-                self.page.views[-1].controls[0].content.controls.append(
-                    # ft.Text(value=self.system_msg)
-                    ChatMessageReceive(self.system_msg)
-                )
-                self.page.session.set(
-                    "chat_history", self.page.views[-1].controls[0].content.controls
-                )
+                # 把普通聊天消息输出到UI
+                if len(self.page.views[-1].controls) > 0:
+                    self.page.views[-1].controls[0].content.controls.append(
+                        ChatMessageReceive(self.system_msg)
+                    )
+                    self.page.session.set(
+                        "chat_history", self.page.views[-1].controls[0].content.controls
+                    )
             self.page.update()
             self.system_msg = ""
+
+    def read_input(self, text):
+        self.console_input.append(text)
+
+    def print_instructions(self):
+        self.system_msg += menu
+
+    def run_chat(self, page):
+        self.page = page
+        self.system_msg += "Welcome to ICS chat\n"
+        self.system_msg += "Please enter your name: "
+        self.output()
+
+        # 登录
+        while self.login() != True:
+            self.output()
+        self.system_msg += "Welcome, " + self.get_name() + "!"
+        self.output()
+
+        while self.sm.get_state() != S_OFFLINE:
+            my_msg, peer_msg = self.get_msgs()
+            if my_msg or peer_msg:
+                self.system_msg += self.sm.proc(my_msg, peer_msg)
+                self.output()
+                if self.sm.get_state() == S_GOMOKU_START:
+                    page.go("/gomoku")
+                if self.sm.get_state() == S_GAMING_GOMOKU_YOUR_TURN:
+                    self.page.views[-1].controls[1] = ft.Text(
+                        "Your turn", weight="bold"
+                    )
+                if self.sm.get_state() == S_GAMING_GOMOKU_PEER_TURN:
+                    self.page.views[-1].controls[1] = ft.Text(
+                        "Peer turn", weight="bold"
+                    )
+                self.page.update()
+            time.sleep(CHAT_WAIT)
+
+        self.quit()
 
     def login(self):
         my_msg, peer_msg = self.get_msgs()
@@ -109,42 +174,5 @@ class Client:
             elif response["status"] == "duplicate":
                 self.system_msg += "Duplicate username, try again"
                 return False
-        else:  # fix: dup is only one of the reasons
+        else:
             return False
-
-    def read_input(self, text):
-        # while True:
-        #     text = sys.stdin.readline()[:-1]
-        self.console_input.append(text)  # no need for lock, append is thread safe
-
-    def print_instructions(self):
-        self.system_msg += menu
-
-    def run_chat(self, page):
-        # self.init_chat()
-        self.page = page
-        self.system_msg += "Welcome to ICS chat\n"
-        self.system_msg += "Please enter your name: "
-        self.output()
-        while self.login() != True:
-            self.output()
-        self.system_msg += "Welcome, " + self.get_name() + "!"
-        self.output()
-        while self.sm.get_state() != S_OFFLINE:
-            self.proc()
-            time.sleep(CHAT_WAIT)
-            if self.sm.get_state() == S_GOMOKU_START:
-                page.go("/gomoku")
-            if self.sm.get_state() == S_GAMING_GOMOKU_YOUR_TURN:
-                page.title = "Your turn"
-            else:
-                self.output()
-            self.page.update()
-        self.quit()
-
-    # ==============================================================================
-    # main processing loop
-    # ==============================================================================
-    def proc(self):
-        my_msg, peer_msg = self.get_msgs()
-        self.system_msg += self.sm.proc(my_msg, peer_msg)
