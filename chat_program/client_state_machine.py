@@ -30,7 +30,7 @@ class ClientSM:
         response = json.loads(myrecv(self.s))
         if response["status"] == "success":
             self.peer = peer
-            self.out_msg += "You are connected with " + self.peer + "\n"
+            self.out_msg += "You are connected to " + self.peer + ".\n"
             return True
         elif response["status"] == "busy":
             self.out_msg += "User is busy. Please try again later\n"
@@ -83,12 +83,14 @@ class ClientSM:
                     self.state = S_CHATTING
 
             elif pm.get("action") == "exchange":
-                self.out_msg += pm["from"] + pm["message"]
+                # self.out_msg += pm["from"] + pm["message"]
+                self.out_msg += json.dumps(pm)
             elif pm.get("action") == "disconnect":
                 self.state = S_LOGGEDIN
             elif pm.get("action") == "game_invite":
-                self.out_msg += pm["game"] + " invite from " + pm["from"] + "\n"
-                self.out_msg += "Type 'y' to accept, anything else to decline\n"
+                # self.out_msg += pm["game"] + " invite from " + pm["from"] + "\n"
+                # self.out_msg += "Type 'y' to accept, anything else to decline\n"
+                self.out_msg += json.dumps(pm)
                 self.state = S_GAME_DECIDING
             elif pm.get("action") == "game_response":
                 if pm["response"] == "y":
@@ -124,8 +126,8 @@ class ClientSM:
                     peer = my_msg[1:].strip()
                     if self.connect_to(peer):
                         self.state = S_CHATTING
-                        self.out_msg += "Connect to " + peer + ". Chat away!\n\n"
-                        self.out_msg += "-----------------------------------\n"
+                        # self.out_msg += "Connected to " + peer + "."
+                        # self.out_msg += "-----------------------------------\n"
                     else:
                         self.out_msg += "Connection unsuccessful\n"
                 elif my_msg.startswith("?"):
@@ -179,7 +181,7 @@ class ClientSM:
                         json.dumps(
                             {
                                 "action": "exchange",
-                                "from": "[" + self.me + "]",
+                                "from": self.me,
                                 "message": my_msg,
                             }
                         ),

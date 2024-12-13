@@ -33,12 +33,13 @@ class ChatMessageSent(ft.Row):
 
 
 class ChatMessageReceive(ft.Row):
-    def __init__(self, message: Message):
+    def __init__(self, message: Message, usrname="System"):
         super().__init__()
         self.vertical_alignment = ft.CrossAxisAlignment.START
+
         single_message = ft.Column(
             [
-                ft.Text("System", weight="bold"),
+                ft.Text(usrname, weight="bold"),
                 ft.Text(message, selectable=True),
             ],
             tight=True,
@@ -57,7 +58,7 @@ class FletEvent:
         self.control = control
 
 
-def parse(msg, output=None):
+def parse(msg, page=None, output=None):
     if type(msg) == dict:
         if msg["action"] == "list":
             usrList = ft.ListView(
@@ -65,15 +66,47 @@ def parse(msg, output=None):
                 spacing=10,
                 auto_scroll=True,
             )
-
+            self = page.session.get("usrname")
             for user, status in msg["results"]["users"].items():
-                if status == 0:
+                if status == 0 and user != self:
                     usrList.controls.append(
                         ft.OutlinedButton(
-                            text=user, on_click=lambda _: output("c " + user), width=300
+                            text=user,
+                            on_click=lambda e: output("c " + e.control.text),
+                            width=300,
                         )
                     )
-            return usrList
+            if len(usrList.controls):
+                return ft.Container(
+                    content=ft.Column(
+                        [
+                            ft.Text("System", weight="bold"),
+                            ft.Text("Please select the users to connect"),
+                            usrList,
+                        ],
+                        tight=True,
+                        spacing=5,
+                    ),
+                    alignment=ft.alignment.center_right,
+                    expand=True,
+                )
+            else:
+                return ChatMessageReceive("No available users.")
+        elif msg["action"] == "exchange":
+            return ChatMessageReceive(msg["message"], msg["from"])
+        elif msg["action"] == "game_invite":
+            return ft.Container(
+                content=ft.Column(
+                    [
+                        ft.Text("System", weight="bold"),
+                        ft.Text(msg["game"] + " request from " + msg["from"]),
+                    ],
+                    tight=True,
+                    spacing=5,
+                ),
+                alignment=ft.alignment.center_right,
+                expand=True,
+            )
         else:
             return ChatMessageReceive(json.dumps(msg))
     else:
