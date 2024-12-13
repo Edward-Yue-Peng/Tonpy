@@ -38,7 +38,7 @@ def chat_view(page: ft.Page, client: Client):
         time = ft.AlertDialog(
             title=ft.Text("Time"),
             content=ft.Text(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-            actions=[ft.TextButton("Cancel", on_click=lambda _: page.close(time))],
+            actions=[ft.TextButton("OK", on_click=lambda _: page.close(time))],
         )
         page.overlay.append(time)
         time.open = True
@@ -100,8 +100,9 @@ def chat_view(page: ft.Page, client: Client):
     )
 
     def game_click(e):
-        page.overlay.append(game_choose)
-        game_choose.open = True
+        # page.overlay.append(game_choose)
+        # game_choose.open = True
+        page.open(game_choose)
         page.update()
 
     def gomoku_choose(e):
@@ -109,16 +110,11 @@ def chat_view(page: ft.Page, client: Client):
         page.close(game_choose)
 
     game_choose = ft.AlertDialog(
-        title=ft.Text("Game center"),
-        content=ft.Column(
-            controls=[
-                ft.TextButton("gomoku", on_click=gomoku_choose),
-                ft.TextButton(
-                    "Something else", on_click=lambda _: page.close(game_choose)
-                ),
-            ]
-        ),
-        actions=[ft.TextButton("Cancel", on_click=lambda _: page.close(game_choose))],
+        title=ft.Text("Invite to play a game?"),
+        actions=[
+            ft.TextButton("Yes", on_click=gomoku_choose),
+            ft.TextButton("Cancel", on_click=lambda _: page.close(game_choose)),
+        ],
     )
     list_users_botton = ft.OutlinedButton(
         "List users",
