@@ -16,10 +16,10 @@ def login_view(page: ft.Page):
     server_addr = ft.TextField(
         label="Server address", hint_text="localhost", on_submit=on_login_click
     )
-    usrname = ft.TextField(label="Username", on_submit=on_login_click)
+    usrname = ft.TextField(label="Username", on_submit=on_login_click, autofocus=True)
     if page.session.get("exception") == "server_addr":
         server_addr.error_text = "Server address is not valid!"
-    login_button = ft.ElevatedButton(
+    login_button = ft.CupertinoFilledButton(
         text="Login",
         on_click=on_login_click,
     )
