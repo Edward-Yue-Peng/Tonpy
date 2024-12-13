@@ -95,18 +95,23 @@ def parse(msg, page=None, output=None):
         elif msg["action"] == "exchange":
             return ChatMessageReceive(msg["message"], msg["from"])
         elif msg["action"] == "game_invite":
-            return ft.Container(
-                content=ft.Column(
-                    [
-                        ft.Text("System", weight="bold"),
-                        ft.Text(msg["game"] + " request from " + msg["from"]),
-                    ],
-                    tight=True,
-                    spacing=5,
-                ),
-                alignment=ft.alignment.center_right,
-                expand=True,
+
+            def submit_choice(e):
+                page.close(invitation)
+                if e.control.text == "Yes":
+                    output("y")
+                else:
+                    output("n")
+
+            invitation = ft.AlertDialog(
+                title=ft.Text(msg["game"] + " request from " + msg["from"]),
+                actions=[
+                    ft.TextButton(text="Yes", on_click=submit_choice),
+                    ft.TextButton(text="No", on_click=submit_choice),
+                ],
             )
+            page.open(invitation)
+            return ft.Column()
         else:
             return ChatMessageReceive(json.dumps(msg))
     else:

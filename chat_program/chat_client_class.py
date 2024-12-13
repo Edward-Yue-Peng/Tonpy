@@ -56,8 +56,7 @@ class Client:
                     ],
                     on_dismiss=lambda e: self.page.go("/chat"),
                 )
-                self.page.dialog = dialog
-                dialog.open = True
+                self.page.open(dialog)
                 self.page.update()
                 return True
         return False
