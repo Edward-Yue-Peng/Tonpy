@@ -99,7 +99,12 @@ def chat_view(page: ft.Page, client: Client):
         ),
         actions=[ft.TextButton("Cancel", on_click=lambda _: page.close(game_choose))],
     )
-
+    list_users_botton = ft.FilledButton(
+        "List users",
+        icon=ft.Icons.PEOPLE_ROUNDED,
+        tooltip="Find out who else is here",
+        on_click=list_users,
+    )
     # Add everything to the page
     return ft.View(
         route="/chat",
@@ -121,12 +126,7 @@ def chat_view(page: ft.Page, client: Client):
             ),
             ft.Row(
                 [
-                    ft.FilledButton(
-                        "List users",
-                        icon=ft.Icons.PEOPLE_ROUNDED,
-                        tooltip="Find out who else is here",
-                        on_click=list_users,
-                    ),
+                    list_users_botton,
                     # ft.FilledButton(
                     #     "Logout",
                     #     icon=ft.Icons.LOGOUT_ROUNDED,
