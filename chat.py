@@ -3,6 +3,7 @@ import threading
 from chat_program.chat_client_class import *
 from parser import *
 import datetime
+from chat_ai import chatai
 
 
 def chat_view(page: ft.Page, client: Client):
@@ -66,6 +67,29 @@ def chat_view(page: ft.Page, client: Client):
         poem_dialog.open = True
         page.update()
 
+    def submit_ai(question):
+        ai_dialog.open = False
+        page.update()
+        chat.controls.append(ChatMessageReceive(chatai(question), "QWEN AI"))
+        page.update()
+
+    def ai_click(e):
+        text_field = ft.TextField()
+
+        global ai_dialog
+        ai_dialog = ft.AlertDialog(
+            title=ft.Text("Ask AI"),
+            content=text_field,
+            actions=[
+                ft.TextButton(
+                    text="Get it", on_click=lambda e: submit_ai(text_field.value)
+                )
+            ],
+        )
+        page.dialog = ai_dialog
+        ai_dialog.open = True
+        page.update()
+
     def submit_search(number):
         search_dialog.open = False
         page.update()
@@ -86,6 +110,9 @@ def chat_view(page: ft.Page, client: Client):
         page.dialog = search_dialog
         search_dialog.open = True
         page.update()
+
+    def leave_click(e):
+        client.read_input(f"bye")
 
     # A new message entry form
     new_message = ft.TextField(
@@ -128,7 +155,7 @@ def chat_view(page: ft.Page, client: Client):
         appbar=ft.AppBar(
             title=ft.Text(f"Tonpy"),
             leading=ft.IconButton(
-                icon=ft.Icons.LOGOUT,
+                icon=ft.Icons.ARROW_BACK_IOS,
                 tooltip="Logout",
                 on_click=logout,
             ),
@@ -152,15 +179,27 @@ def chat_view(page: ft.Page, client: Client):
             ft.Row(
                 [
                     list_users_botton,
-                    ft.OutlinedButton(
-                        "Time",
+                    ft.IconButton(
+                        icon_size=20,
                         icon=ft.Icons.ACCESS_TIME,
                         on_click=time,
                     ),
-                    ft.OutlinedButton(
-                        "Poem",
+                    ft.IconButton(
+                        icon_size=20,
                         icon=ft.Icons.BOOK,
                         on_click=poem,
+                    ),
+                    ft.IconButton(
+                        icon=ft.Icons.EXIT_TO_APP_ROUNDED,
+                        icon_size=20,
+                        tooltip="Leave the group",
+                        on_click=leave_click,
+                    ),
+                    ft.IconButton(
+                        icon=ft.Icons.COMPUTER,
+                        icon_size=20,
+                        tooltip="Ask AI",
+                        on_click=ai_click,
                     ),
                 ]
             ),
