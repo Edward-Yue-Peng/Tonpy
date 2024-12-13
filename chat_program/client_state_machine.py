@@ -114,9 +114,9 @@ class ClientSM:
                     self.out_msg += "Time is: " + time_in
                 elif my_msg == "who":
                     mysend(self.s, json.dumps({"action": "list"}))
-                    logged_in = json.loads(myrecv(self.s))["results"]
-                    self.out_msg += "Here are all the users in the system:\n"
-                    self.out_msg += logged_in
+                    # logged_in = json.loads(myrecv(self.s))["results"]
+                    # self.out_msg += "Here are all the users in the system:\n"
+                    self.out_msg += myrecv(self.s)
                 elif my_msg == "gomoku_invite":
                     self.out_msg += "You need someone to play with"
                 elif my_msg.startswith("c"):

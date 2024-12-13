@@ -57,7 +57,7 @@ class FletEvent:
         self.control = control
 
 
-def parse(msg):
+def parse(msg, output=None):
     if type(msg) == dict:
         if msg["action"] == "list":
             usrList = ft.ListView(
@@ -65,11 +65,14 @@ def parse(msg):
                 spacing=10,
                 auto_scroll=True,
             )
+
             for user, status in msg["results"]["users"].items():
-                # print(user, status)
                 if status == 0:
-                    usrList.content.append(ft.OutlinedButton(text=user))
-            # print(usrList)
+                    usrList.controls.append(
+                        ft.OutlinedButton(
+                            text=user, on_click=lambda _: output("c " + user), width=300
+                        )
+                    )
             return usrList
         else:
             return ChatMessageReceive(json.dumps(msg))

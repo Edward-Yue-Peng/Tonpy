@@ -116,6 +116,9 @@ class Client:
         if len(self.system_msg) > 0:
             try:
                 msg = json.loads(self.system_msg)
+                self.page.views[-1].controls[0].content.controls.append(
+                    parse(msg, self.read_input)
+                )
             except:
                 if len(self.page.views[-1].controls) > 0:
                     self.page.views[-1].controls[0].content.controls.append(
@@ -128,6 +131,7 @@ class Client:
             self.system_msg = ""
 
     def read_input(self, text):
+        print(text)
         self.console_input.append(text)
 
     def print_instructions(self):
