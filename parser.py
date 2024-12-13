@@ -1,4 +1,6 @@
 import flet as ft
+import json
+from chat_program.chat_utils import *
 
 
 class Message:
@@ -53,3 +55,23 @@ class ChatMessageReceive(ft.Row):
 class FletEvent:
     def __init__(self, control):
         self.control = control
+
+
+def parse(msg):
+    if type(msg) == dict:
+        if msg["action"] == "list":
+            usrList = ft.ListView(
+                expand=True,
+                spacing=10,
+                auto_scroll=True,
+            )
+            for user, status in msg["results"]["users"].items():
+                # print(user, status)
+                if status == 0:
+                    usrList.content.append(ft.OutlinedButton(text=user))
+            # print(usrList)
+            return usrList
+        else:
+            return ChatMessageReceive(json.dumps(msg))
+    else:
+        return ChatMessageReceive(msg)

@@ -76,11 +76,11 @@ class Client:
                     )
                     e = FletEvent(control)
                     control.on_click(e)
+                else:
+                    self.page.views[-1].controls[0].content.controls.append(parse(msg))
             except:
-                print("msg:", self.system_msg)
                 self.page.views[-1].controls[0].content.controls.append(
-                    # ft.Text(value=self.system_msg)
-                    ChatMessageReceive(self.system_msg)
+                    parse(self.system_msg)
                 )
                 self.page.session.set(
                     "chat_history", self.page.views[-1].controls[0].content.controls
@@ -118,9 +118,9 @@ class Client:
     def run_chat(self, page):
         # self.init_chat()
         self.page = page
-        self.system_msg += "Welcome to ICS chat\n"
-        self.system_msg += "Please enter your name: "
-        self.output()
+        # self.system_msg += "Welcome to ICS chat\n"
+        # self.system_msg += "Please enter your name: "
+        # self.output()
         while self.login() != True:
             self.output()
         self.system_msg += "Welcome, " + self.get_name() + "!"
