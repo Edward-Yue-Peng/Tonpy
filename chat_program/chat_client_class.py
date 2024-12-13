@@ -19,7 +19,7 @@ class Client:
         self.peer_msg = ""
         self.args = args
         self.exception = ""
-        self.board = [[0] * 15 for _ in range(15)]  # 棋盘状态
+        self.board = [[0] * 15 for _ in range(15)]
 
     def init_board(self):
         self.board = [[0] * 15 for _ in range(15)]
@@ -49,12 +49,21 @@ class Client:
             if count >= 5:
                 winner = "You" if player_id == 1 else "Opponent"
                 self.system_msg += f"{winner} win!\n"
+                dialog = ft.AlertDialog(
+                    title=ft.Text(f"Game Over! {winner} wins!"),
+                    actions=[
+                        ft.TextButton("OK", on_click=lambda e: self.page.go("/chat"))
+                    ],
+                    on_dismiss=lambda e: self.page.go("/chat"),
+                )
+                self.page.dialog = dialog
+                dialog.open = True
                 self.page.update()
                 return True
         return False
 
     def update_gomoku_move(self, x, y, player="peer"):
-        # 根据player决定颜色
+        # 我方一直是红，对方一直是蓝
         color = "red" if player == "me" else "blue"
         grid = self.page.views[-1].controls[-1]
         cell = grid.controls[x * 15 + y]
@@ -104,12 +113,10 @@ class Client:
         return my_msg, peer_msg
 
     def output(self):
-        # 只显示非json结构或胜负提示等系统信息
         if len(self.system_msg) > 0:
             try:
                 msg = json.loads(self.system_msg)
             except:
-                # 把普通聊天消息输出到UI
                 if len(self.page.views[-1].controls) > 0:
                     self.page.views[-1].controls[0].content.controls.append(
                         ChatMessageReceive(self.system_msg)
@@ -132,7 +139,6 @@ class Client:
         self.system_msg += "Please enter your name: "
         self.output()
 
-        # 登录
         while self.login() != True:
             self.output()
         self.system_msg += "Welcome, " + self.get_name() + "!"

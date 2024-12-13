@@ -10,6 +10,7 @@ import pickle as pkl
 from chat_utils import *
 import chat_group as grp
 
+
 class Server:
     def __init__(self):
         self.new_clients = []
@@ -88,9 +89,18 @@ class Server:
                     # 通知对方有请求
                     for g in the_guys[1:]:
                         to_sock = self.logged_name2sock[g]
-                        mysend(to_sock, json.dumps({"action":"connect","status":"request","from":from_name}))
+                        mysend(
+                            to_sock,
+                            json.dumps(
+                                {
+                                    "action": "connect",
+                                    "status": "request",
+                                    "from": from_name,
+                                }
+                            ),
+                        )
                 else:
-                    rmsg = json.dumps({"action":"connect","status":"no-user"})
+                    rmsg = json.dumps({"action": "connect", "status": "no-user"})
                     mysend(from_sock, rmsg)
 
             elif msg["action"] == "game_invite":
@@ -98,23 +108,71 @@ class Server:
                 from_name = self.logged_sock2name[from_sock]
                 to_name = self.group.list_me(from_name)[1]
                 to_sock = self.logged_name2sock[to_name]
-                mysend(to_sock, json.dumps({"action":"game_invite","game":game,"from":from_name}))
+                mysend(
+                    to_sock,
+                    json.dumps(
+                        {"action": "game_invite", "game": game, "from": from_name}
+                    ),
+                )
 
             elif msg["action"] == "game_response":
                 from_name = self.logged_sock2name[from_sock]
                 to_name = self.group.list_me(from_name)[1]
                 to_sock = self.logged_name2sock[to_name]
-                mysend(to_sock, json.dumps({"action":"game_response","game":msg["game"],"response":msg["response"],"from":from_name}))
+                mysend(
+                    to_sock,
+                    json.dumps(
+                        {
+                            "action": "game_response",
+                            "game": msg["game"],
+                            "response": msg["response"],
+                            "from": from_name,
+                        }
+                    ),
+                )
                 if msg["response"] == "y":
-                    # 决定谁先手
                     if random.choice([True, False]):
-                        # from_sock先手
-                        mysend(from_sock, json.dumps({"action":"game_start","game":"gomoku","turn":"you"}))
-                        mysend(to_sock, json.dumps({"action":"game_start","game":"gomoku","turn":"peer"}))
+                        mysend(
+                            from_sock,
+                            json.dumps(
+                                {
+                                    "action": "game_start",
+                                    "game": "gomoku",
+                                    "turn": "you",
+                                }
+                            ),
+                        )
+                        mysend(
+                            to_sock,
+                            json.dumps(
+                                {
+                                    "action": "game_start",
+                                    "game": "gomoku",
+                                    "turn": "peer",
+                                }
+                            ),
+                        )
                     else:
-                        # 对方先手
-                        mysend(from_sock, json.dumps({"action":"game_start","game":"gomoku","turn":"peer"}))
-                        mysend(to_sock, json.dumps({"action":"game_start","game":"gomoku","turn":"you"}))
+                        mysend(
+                            from_sock,
+                            json.dumps(
+                                {
+                                    "action": "game_start",
+                                    "game": "gomoku",
+                                    "turn": "peer",
+                                }
+                            ),
+                        )
+                        mysend(
+                            to_sock,
+                            json.dumps(
+                                {
+                                    "action": "game_start",
+                                    "game": "gomoku",
+                                    "turn": "you",
+                                }
+                            ),
+                        )
 
             elif msg["action"] == "gomoku_wait":
                 pass
@@ -136,29 +194,42 @@ class Server:
                 for g in the_guys[1:]:
                     to_sock = self.logged_name2sock[g]
                     self.indices[g].add_msg_and_index(said2)
-                    mysend(to_sock, json.dumps({"action":"exchange","from":msg["from"],"message":msg["message"]}))
+                    mysend(
+                        to_sock,
+                        json.dumps(
+                            {
+                                "action": "exchange",
+                                "from": msg["from"],
+                                "message": msg["message"],
+                            }
+                        ),
+                    )
 
             elif msg["action"] == "list":
                 from_name = self.logged_sock2name[from_sock]
                 rmsg = self.group.list_all()
-                mysend(from_sock, json.dumps({"action":"list","results":rmsg}))
+                mysend(from_sock, json.dumps({"action": "list", "results": rmsg}))
 
             elif msg["action"] == "poem":
                 poem_indx = int(msg["target"])
                 from_name = self.logged_sock2name[from_sock]
                 poem = self.sonnet.get_poem(poem_indx)
                 poem = "\n".join(poem).strip()
-                mysend(from_sock, json.dumps({"action":"poem","results":poem}))
+                mysend(from_sock, json.dumps({"action": "poem", "results": poem}))
 
             elif msg["action"] == "time":
                 ctime = time.strftime("%d.%m.%y,%H:%M", time.localtime())
-                mysend(from_sock, json.dumps({"action":"time","results":ctime}))
+                mysend(from_sock, json.dumps({"action": "time", "results": ctime}))
 
             elif msg["action"] == "search":
                 term = msg["target"]
                 from_name = self.logged_sock2name[from_sock]
-                search_rslt = "\n".join([x[-1] for x in self.indices[from_name].search(term)])
-                mysend(from_sock, json.dumps({"action":"search","results":search_rslt}))
+                search_rslt = "\n".join(
+                    [x[-1] for x in self.indices[from_name].search(term)]
+                )
+                mysend(
+                    from_sock, json.dumps({"action": "search", "results": search_rslt})
+                )
 
             elif msg["action"] == "disconnect":
                 from_name = self.logged_sock2name[from_sock]
@@ -168,7 +239,7 @@ class Server:
                 if len(the_guys) == 1:
                     g = the_guys.pop()
                     to_sock = self.logged_name2sock[g]
-                    mysend(to_sock, json.dumps({"action":"disconnect"}))
+                    mysend(to_sock, json.dumps({"action": "disconnect"}))
 
         else:
             # client died unexpectedly
@@ -188,8 +259,10 @@ class Server:
                 sock, address = self.server.accept()
                 self.new_client(sock)
 
+
 def main():
     server = Server()
     server.run()
+
 
 main()

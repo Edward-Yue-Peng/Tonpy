@@ -59,25 +59,18 @@ class ClientSM:
                 y = pm["coord"]["y"]
                 player_id = 1 if from_player == self.me else 2
 
-                # 更新棋盘UI
                 self.client.place_stone(x, y, player_id)
                 self.client.update_gomoku_move(
                     x, y, "me" if from_player == self.me else "peer"
                 )
 
-                # 检查胜负
                 if self.client.check_winner(x, y, player_id):
-                    # 如果产生胜者,可根据需要设置状态为S_LOGGEDIN或S_OFFLINE，以结束游戏
-                    # self.state = S_LOGGEDIN
+                    self.state = S_CHATTING
                     pass
                 else:
-                    # 根据落子方决定状态切换
                     if from_player == self.me:
-                        # 如果是自己下的子，已经在发出move时切过一次状态为S_GAMING_GOMOKU_PEER_TURN
-                        # 因此这里不需要切换状态。
                         pass
                     else:
-                        # 对手下子到达，现在轮到自己下子
                         self.state = S_GAMING_GOMOKU_YOUR_TURN
 
             elif pm.get("action") == "connect":
