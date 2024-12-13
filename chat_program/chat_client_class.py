@@ -137,6 +137,19 @@ class Client:
     def print_instructions(self):
         self.system_msg += menu
 
+    def change_list_users(page):
+        # 找到目标控件
+        for control in page.views[-1].controls:
+            if isinstance(control, ft.Row):  # 如果是包含按钮的 Row
+                for sub_control in control.controls:
+                    if (
+                        isinstance(sub_control, ft.FilledButton)
+                        and sub_control.text == "List users"
+                    ):
+                        # 修改按钮的文本和点击事件
+                        sub_control.text = "List groups"
+        page.update()
+
     def run_chat(self, page):
         self.page = page
         self.system_msg += "Welcome to ICS chat\n"
@@ -149,6 +162,7 @@ class Client:
         self.output()
 
         while self.sm.get_state() != S_OFFLINE:
+
             my_msg, peer_msg = self.get_msgs()
             if my_msg or peer_msg:
                 self.system_msg += self.sm.proc(my_msg, peer_msg)
@@ -177,6 +191,7 @@ class Client:
             response = json.loads(self.recv())
             if response["status"] == "ok":
                 self.state = S_LOGGEDIN
+
                 self.sm.set_state(S_LOGGEDIN)
                 self.sm.set_myname(self.name)
                 self.print_instructions()

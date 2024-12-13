@@ -81,6 +81,7 @@ class ClientSM:
                     self.out_msg += ". Chat away!\n\n"
                     self.out_msg += "------------------------------------\n"
                     self.state = S_CHATTING
+
             elif pm.get("action") == "exchange":
                 self.out_msg += pm["from"] + pm["message"]
             elif pm.get("action") == "disconnect":
@@ -147,6 +148,7 @@ class ClientSM:
                     self.out_msg += menu
 
         elif self.state == S_CHATTING:
+
             if len(my_msg) > 0:
                 if my_msg == "bye":
                     self.disconnect()
@@ -158,6 +160,19 @@ class ClientSM:
                     )
                     self.out_msg += "gomoku invite sent"
                     self.state = S_GAME_INVITING
+                elif my_msg.startswith("p") and my_msg[1:].isdigit():
+                    poem_idx = my_msg[1:].strip()
+                    mysend(self.s, json.dumps({"action": "poem", "target": poem_idx}))
+                    poem = json.loads(myrecv(self.s))["results"]
+                    if len(poem) > 0:
+                        self.out_msg += poem + "\n\n"
+                    else:
+                        self.out_msg += f"Sonnet {poem_idx} not found\n\n"
+                elif my_msg == "who":
+                    mysend(self.s, json.dumps({"action": "list"}))
+                    logged_in = json.loads(myrecv(self.s))["results"]
+                    self.out_msg += "Here are all the users in the system:\n"
+                    self.out_msg += logged_in
                 else:
                     mysend(
                         self.s,
