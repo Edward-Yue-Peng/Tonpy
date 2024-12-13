@@ -66,16 +66,21 @@ class Client:
 
     def output(self):
         if len(self.system_msg) > 0:
+
             try:
                 msg = json.loads(self.system_msg)
                 if msg["action"] == "gomoku_move":
-                    control = (
-                        self.page.views[-1]
-                        .controls[-1]
-                        .controls[(msg["coord"]["x"]) * 15 + msg["coord"]["y"]]
+                    x = msg["coord"]["x"]
+                    y = msg["coord"]["y"]
+                    grid = self.page.views[-1].controls[-1]
+                    cell = grid.controls[x * 15 + y]
+                    cell.content = ft.Container(
+                        width=20,
+                        height=20,
+                        bgcolor="blue",
+                        border_radius=10,
                     )
-                    e = FletEvent(control)
-                    control.on_click(e)
+                    self.page.update()
             except:
                 print("msg:", self.system_msg)
                 self.page.views[-1].controls[0].content.controls.append(
@@ -127,15 +132,11 @@ class Client:
         self.output()
         while self.sm.get_state() != S_OFFLINE:
             self.proc()
-            # print("running")
             time.sleep(CHAT_WAIT)
             if self.sm.get_state() == S_GOMOKU_START:
-                # TODO is it correct?
                 page.go("/gomoku")
             if self.sm.get_state() == S_GAMING_GOMOKU_YOUR_TURN:
                 page.title = "Your turn"
-                print("Your turn")
-
             else:
                 self.output()
             self.page.update()

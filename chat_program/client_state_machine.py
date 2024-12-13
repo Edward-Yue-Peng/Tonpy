@@ -224,10 +224,15 @@ class ClientSM:
             if my_msg.startswith("gomoku_move"):
                 print(my_msg)
                 coord = json.loads(my_msg[12:])
+                self.state = S_GAMING_GOMOKU_PEER_TURN
                 mysend(self.s, json.dumps({"action": "gomoku_move", "coord": coord}))
+
         elif self.state == S_GAMING_GOMOKU_PEER_TURN:
             if len(peer_msg) > 0:
+                print(peer_msg)
                 self.out_msg += peer_msg
+                self.state = S_GAMING_GOMOKU_YOUR_TURN
+
         else:
             self.out_msg += "How did you wind up here??\n"
             print_state(self.state)
