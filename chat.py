@@ -3,6 +3,7 @@ import threading
 from chat_program.chat_client_class import *
 from parser import *
 import datetime
+from chat_ai import chatai
 
 
 def chat_view(page: ft.Page, client: Client):
@@ -64,6 +65,29 @@ def chat_view(page: ft.Page, client: Client):
         )
         page.dialog = poem_dialog
         poem_dialog.open = True
+        page.update()
+
+    def submit_ai(question):
+        ai_dialog.open = False
+        page.update()
+        chat.controls.append(ChatMessageReceive(chatai(question), "QWEN AI"))
+        page.update()
+
+    def ai_click(e):
+        text_field = ft.TextField()
+
+        global ai_dialog
+        ai_dialog = ft.AlertDialog(
+            title=ft.Text("Ask AI"),
+            content=text_field,
+            actions=[
+                ft.TextButton(
+                    text="Get it", on_click=lambda e: submit_ai(text_field.value)
+                )
+            ],
+        )
+        page.dialog = ai_dialog
+        ai_dialog.open = True
         page.update()
 
     def submit_search(number):
@@ -170,6 +194,12 @@ def chat_view(page: ft.Page, client: Client):
                         icon_size=20,
                         tooltip="Leave the group",
                         on_click=leave_click,
+                    ),
+                    ft.IconButton(
+                        icon=ft.Icons.COMPUTER,
+                        icon_size=20,
+                        tooltip="Ask AI",
+                        on_click=ai_click,
                     ),
                 ]
             ),
