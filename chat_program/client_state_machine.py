@@ -76,10 +76,10 @@ class ClientSM:
             elif pm.get("action") == "connect":
                 if pm.get("status") == "request":
                     self.peer = pm["from"]
-                    self.out_msg += "Request from " + self.peer + "\n"
-                    self.out_msg += "You are connected with " + self.peer
-                    self.out_msg += ". Chat away!\n\n"
-                    self.out_msg += "------------------------------------\n"
+                    # self.out_msg += "Request from " + self.peer + "\n"
+                    self.out_msg += "You are connected to " + self.peer
+                    # self.out_msg += ". Chat away!\n\n"
+                    # self.out_msg += "------------------------------------\n"
                     self.state = S_CHATTING
 
             elif pm.get("action") == "exchange":
@@ -170,11 +170,6 @@ class ClientSM:
                         self.out_msg += poem + "\n\n"
                     else:
                         self.out_msg += f"Sonnet {poem_idx} not found\n\n"
-                elif my_msg == "who":
-                    mysend(self.s, json.dumps({"action": "list"}))
-                    logged_in = json.loads(myrecv(self.s))["results"]
-                    self.out_msg += "Here are all the users in the system:\n"
-                    self.out_msg += logged_in
                 else:
                     mysend(
                         self.s,
