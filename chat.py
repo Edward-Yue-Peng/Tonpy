@@ -144,9 +144,9 @@ def chat_view(page: ft.Page, client: Client):
         ],
     )
     list_users_botton = ft.OutlinedButton(
-        "List users",
+        "List",
         icon=ft.Icons.PEOPLE_ROUNDED,
-        tooltip="Find out who else is here",
+        tooltip="Find out available users/groups",
         on_click=list_users,
     )
     # Add everything to the page

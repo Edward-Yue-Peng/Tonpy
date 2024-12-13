@@ -84,8 +84,10 @@ def parse(msg, page=None, output=None):
             for idx, users in msg["results"]["groups"].items():
                 grpList.controls.append(
                     ft.OutlinedButton(
-                        text=users.join(", "),
-                        on_click=lambda e: output("c " + e.control.text.split(", ")[0]),
+                        text="Group: " + ", ".join(users),
+                        on_click=lambda e: output(
+                            "c " + e.control.text[7:].split(", ")[0]
+                        ),
                         width=300,
                     )
                 )
@@ -95,7 +97,7 @@ def parse(msg, page=None, output=None):
                     content=ft.Column(
                         [
                             ft.Text("System", weight="bold"),
-                            ft.Text("Please select the users to connect"),
+                            ft.Text("Please select the user/group to connect"),
                             usrList,
                             grpList,
                         ],
