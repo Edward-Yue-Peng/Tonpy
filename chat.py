@@ -87,6 +87,9 @@ def chat_view(page: ft.Page, client: Client):
         search_dialog.open = True
         page.update()
 
+    def leave_click(e):
+        client.read_input(f"bye")
+
     # A new message entry form
     new_message = ft.TextField(
         hint_text="Write a message...",
@@ -128,7 +131,7 @@ def chat_view(page: ft.Page, client: Client):
         appbar=ft.AppBar(
             title=ft.Text(f"Tonpy"),
             leading=ft.IconButton(
-                icon=ft.Icons.LOGOUT,
+                icon=ft.Icons.ARROW_BACK_IOS,
                 tooltip="Logout",
                 on_click=logout,
             ),
@@ -152,15 +155,21 @@ def chat_view(page: ft.Page, client: Client):
             ft.Row(
                 [
                     list_users_botton,
-                    ft.OutlinedButton(
-                        "Time",
+                    ft.IconButton(
+                        icon_size=20,
                         icon=ft.Icons.ACCESS_TIME,
                         on_click=time,
                     ),
-                    ft.OutlinedButton(
-                        "Poem",
+                    ft.IconButton(
+                        icon_size=20,
                         icon=ft.Icons.BOOK,
                         on_click=poem,
+                    ),
+                    ft.IconButton(
+                        icon=ft.Icons.EXIT_TO_APP_ROUNDED,
+                        icon_size=20,
+                        tooltip="Leave the group",
+                        on_click=leave_click,
                     ),
                 ]
             ),
