@@ -8,78 +8,19 @@ def gomoku_view(page: ft.Page, client: Client):
     page.title = "Gomoku"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-    board = [[0] * BOARD_SIZE for _ in range(BOARD_SIZE)]
-    status = ft.Text("当前玩家：黑棋", size=20)
-    game_over = False
+    status = ft.Text("Welcome to Gomoku!", weight="bold")
 
     def on_quit(e):
         page.go("/chat")
         client.state = S_CHATTING
-        # TODO: quit game
-
-    def check_winner(x, y, player):
-        directions = [(1, 0), (0, 1), (1, 1), (1, -1)]
-        for dx, dy in directions:
-            count = 1
-            for step in range(1, 5):
-                nx, ny = x + dx * step, y + dy * step
-                if (
-                    0 <= nx < BOARD_SIZE
-                    and 0 <= ny < BOARD_SIZE
-                    and board[nx][ny] == player
-                ):
-                    count += 1
-                else:
-                    break
-            for step in range(1, 5):
-                nx, ny = x - dx * step, y - dy * step
-                if (
-                    0 <= nx < BOARD_SIZE
-                    and 0 <= ny < BOARD_SIZE
-                    and board[nx][ny] == player
-                ):
-                    count += 1
-                else:
-                    break
-            if count >= 5:
-                return True
-        return False
 
     def handle_click(e):
-        nonlocal game_over
-        if game_over:
-            return
         x, y = e.control.data
-        # client.read_input(f'gomoku_move {{"x":{x},"y":{y}}}')
-        if board[x][y] == 0:
+        # 本地不立即更新UI和判断胜负，发送消息给服务器等待服务器返回gomoku_move
+        if client.get_stone(x, y) == 0:
             client.read_input(f'gomoku_move {{"x":{x},"y":{y}}}')
-            if status.value == "当前玩家：黑棋":
-                board[x][y] = 1
-                e.control.content = ft.Container(
-                    width=20,
-                    height=20,
-                    bgcolor="red",
-                    border_radius=10,
-                )
-                if check_winner(x, y, 1):
-                    status.value = "黑棋胜利！"
-                    game_over = True
-                else:
-                    status.value = "当前玩家：白棋"
-            else:
-                board[x][y] = 2
-                e.control.content = ft.Container(
-                    width=20,
-                    height=20,
-                    bgcolor="blue",
-                    border_radius=10,
-                )
-                if check_winner(x, y, 2):
-                    status.value = "白棋胜利！"
-                    game_over = True
-                else:
-                    status.value = "当前玩家：黑棋"
-            page.update()
+            # 此处不更新UI，等待服务器返回gomoku_move消息才更新UI
+            # 同时在外部有触发proc()的机制时会自动处理收到的消息并更新UI
 
     grid = ft.GridView(
         width=450,
@@ -103,10 +44,10 @@ def gomoku_view(page: ft.Page, client: Client):
             grid.controls.append(cell)
 
     return ft.View(
-        route="/game",
+        route="/gomoku",
         controls=[
             ft.AppBar(
-                title=ft.Text(f"gomoku", weight="bold"),
+                title=ft.Text("Gomoku", weight="bold"),
                 leading=ft.IconButton(
                     icon=ft.Icons.ARROW_BACK,
                     tooltip="Quit",
