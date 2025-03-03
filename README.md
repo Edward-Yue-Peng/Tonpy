@@ -8,7 +8,7 @@ Tonpy is a python messaging program built with [Flet](https://flet.dev/). It all
 
 ## About this Project
 
-**Authors:** [Tong Xia](https://github.com/xiakele) and [Yue Peng](https://github.com/Edward-Yue-Peng) from NYU Shanghai.
+**Authors:** [Tony Xia](https://github.com/xiakele) and [Yue Peng](https://github.com/Edward-Yue-Peng) from NYU Shanghai.
 
 This project is the final project of the ICDS (Introduction to Computer and Data Science) course at [NYU Shanghai](https://shanghai.nyu.edu).
 
